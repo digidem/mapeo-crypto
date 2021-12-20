@@ -10,9 +10,9 @@ Key management and encryption / decryption functions for Mapeo.
 
 - [KeyManager](#keymanager)
   - [Parameters](#parameters)
-  - [`km.getIdentityKeyPair()`](#kmgetidentitykeypair)
+  - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
   - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
-  - [`km.getHypercoreKeyPair(name, namespace)`](#kmgethypercorekeypairname-namespace)
+  - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
     - [Parameters](#parameters-1)
   - [`KeyManager.generateIdentityKey()`](#keymanagergenerateidentitykey)
   - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
@@ -49,7 +49,7 @@ can impersonate the user to another Mapeo user.
 
 - `identityKey: Buffer` 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
 
-#### `km.getIdentityKeyPair()`
+#### `km.getIdentityKeypair()`
 
 Generate a deterministic ed25519 signing keypair that uniquely identifies
 this device. Used for identifying the device on the network to other peers.
@@ -66,7 +66,7 @@ impersonate the identity of the holder.
 
 Returns `string`
 
-#### `km.getHypercoreKeyPair(name, namespace)`
+#### `km.getHypercoreKeypair(name, namespace)`
 
 Generate a deterministic signing keypair for a given project key and name.
 API compatible with Corestore-next.
