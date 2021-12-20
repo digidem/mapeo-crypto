@@ -1,4 +1,4 @@
-## `@mapeo/crypto`
+## @mapeo/crypto
 
 [![Node.js CI](https://github.com/digidem/mapeo-crypto/workflows/Node.js%20CI/badge.svg)](https://github.com/digidem/mapeo-crypto/actions/workflows/node.js.yml)
 [![Coverage Status](https://coveralls.io/repos/github/digidem/mapeo-crypto/badge.svg)](https://coveralls.io/github/digidem/mapeo-crypto)
