@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm run type & npm run tap",
     "tap": "tap",
+    "posttest": "mkdir -p coverage && tap --coverage-report=text-lcov > ./coverage/lcov.info",
     "type": "tsc --noEmit"
   },
   "keywords": [],
