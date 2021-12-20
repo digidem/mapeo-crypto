@@ -55,6 +55,16 @@ this device. Used for identifying the device on the network to other peers.
 
 Returns `{ publicKey: Buffer, secretKey: Buffer }`
 
+#### `km.getIdentityBackupCode()`
+
+Generate a backup code for the `identityKey`. The backup code will be a
+30-character string, starting with the letter `M`. It encodes the identity key
+and can be used to recover the identity key on another device. It should be
+treated as a secure password: someone with access to a backup code can
+impersonate the identity of the holder.
+
+Returns `string`
+
 #### `km.getHypercoreKeyPair(name, namespace)`
 
 Generate a deterministic signing keypair for a given project key and name.
