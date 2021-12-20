@@ -11,6 +11,7 @@ Key management and encryption / decryption functions for Mapeo.
 - [KeyManager](#keymanager)
   - [Parameters](#parameters)
   - [`km.getIdentityKeyPair()`](#kmgetidentitykeypair)
+  - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
   - [`km.getHypercoreKeyPair(name, namespace)`](#kmgethypercorekeypairname-namespace)
     - [Parameters](#parameters-1)
   - [`KeyManager.generateIdentityKey()`](#keymanagergenerateidentitykey)
