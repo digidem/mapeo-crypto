@@ -32,13 +32,35 @@ test('can generate and decode invite', (t) => {
   t.end()
 })
 
+test('can generate and decode invite with encryption key', (t) => {
+  for (const encoding of encodings) {
+    const projectKey = crypto.randomBytes(32)
+    const encryptionKey = crypto.randomBytes(32)
+    const receiverKeypair = signKeypair()
+    const joinRequest = { identityPublicKey: receiverKeypair.publicKey }
+    const invite = generateInvite(joinRequest, {
+      projectKey,
+      encryptionKey,
+      encoding,
+    })
+    const secretMessage = decodeInviteSecretMessage(
+      invite,
+      receiverKeypair.publicKey,
+      receiverKeypair.secretKey,
+      { encoding }
+    )
+    t.same(secretMessage, { projectKey, encryptionKey })
+  }
+  t.end()
+})
+
 test('can encode and decode join request', (t) => {
   for (const encoding of encodings) {
     const identityPublicKey = crypto.randomBytes(32)
     const joinRequest = { identityPublicKey }
     const encoded = encodeJoinRequest(joinRequest, { encoding })
     const decoded = decodeJoinRequest(encoded, { encoding })
-    t.same(decoded, { ...joinRequest, host: null, name: null })
+    t.same(decoded, joinRequest)
   }
   t.end()
 })

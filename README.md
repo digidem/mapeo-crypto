@@ -161,6 +161,7 @@ message, only part of a URL before a `+` might be clickable).
 - `options`
   - `options.encoding: 'base32' | 'base62'` Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
   - `options.projectKey: Buffer` Project key for project you wish to generate the invite for
+  - `[options.encryptionKey: Buffer]` Optional encryption key, used for on-disk encryption/decryption of an encrypted project.
 
 Returns `string` Encoded invite
 
@@ -178,7 +179,7 @@ decrypted message includes the project key for the project the invite is for.
 
   - `options.encoding: 'base32' | 'base62'` Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
 
-Returns `{ projectKey: Buffer }` Decrypted secret project key
+Returns `{ projectKey: Buffer, encryptionKey?: Buffer }` Decrypted secret project key and optional encryption key.
 
 ### Type `JoinRequest`
 

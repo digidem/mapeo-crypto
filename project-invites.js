@@ -67,11 +67,13 @@ function decodeJoinRequest(str, { encoding }) {
  * @param {Object} options
  * @param {StringEncoding} options.encoding Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
  * @param {Buffer} options.projectKey Project key for project you wish to generate the invite for
+ * @param {Buffer} [options.encryptionKey] Optional 32-byte encryption key for the project. This key is used to encrypt hypercore data on disk. Without this key a user will still be able to sync an encrypted project, but will not be able to read any data.
  * @returns {string} Encoded invite
  */
-function generateInvite(joinRequest, { encoding, projectKey }) {
+function generateInvite(joinRequest, { encoding, projectKey, encryptionKey }) {
   const encodedInviteSecretMessage = ByteEncoding.inviteSecretMessage.encode({
     projectKey,
+    encryptionKey,
   })
   const ephemeralEncryptKeypair = boxKeypair()
   const encryptedMessage = encryptMessage(
