@@ -8,25 +8,28 @@ Key management and encryption / decryption functions for Mapeo.
 
 ## Table of Contents
 
-- [KeyManager](#keymanager)
-  - [Parameters](#parameters)
-  - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
-  - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
-  - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
-    - [Parameters](#parameters-1)
-  - [`KeyManager.generateIdentityKey()`](#keymanagergenerateidentitykey)
-  - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
-    - [Parameters](#parameters-2)
-- [Project Invites](#project-invites)
-  - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
-    - [Parameters](#parameters-3)
-  - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
-    - [Parameters](#parameters-4)
-  - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
-    - [Parameters](#parameters-5)
-  - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
-    - [Parameters](#parameters-6)
-- [Type `JoinRequest`](#type-joinrequest)
+- [@mapeo/crypto](#mapeocrypto)
+- [Table of Contents](#table-of-contents)
+- [API](#api)
+  - [KeyManager](#keymanager)
+      - [Parameters](#parameters)
+    - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
+    - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
+    - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
+      - [Parameters](#parameters-1)
+    - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
+    - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
+      - [Parameters](#parameters-2)
+  - [Project Invites](#project-invites)
+    - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
+      - [Parameters](#parameters-3)
+    - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
+      - [Parameters](#parameters-4)
+    - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
+      - [Parameters](#parameters-5)
+    - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+      - [Parameters](#parameters-6)
+  - [Type `JoinRequest`](#type-joinrequest)
 
 ## API
 
@@ -35,19 +38,19 @@ Key management and encryption / decryption functions for Mapeo.
 ```js
 const { KeyManager } = require('@mapeo/crypto')
 
-const km = new KeyManager(identityKey)
+const km = new KeyManager(rootKey)
 ```
 
 The KeyManager class derives the key pairs used for identifying the device
 and for all the hypercores on the device. All the key pairs are generated
-deterministically from a single 16-byte identity key. The backup code can be
-used to backup this identity and recover it on a new device. The identity key
+deterministically from a single 16-byte root key. The backup code can be
+used to backup this identity and recover it on a new device. The root key
 and backup code must be kept secret at all times - someone who has this key
 can impersonate the user to another Mapeo user.
 
 ##### Parameters
 
-- `identityKey: Buffer` 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+- `rootKey: Buffer` 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
 
 #### `km.getIdentityKeypair()`
 
@@ -58,9 +61,9 @@ Returns `{ publicKey: Buffer, secretKey: Buffer }`
 
 #### `km.getIdentityBackupCode()`
 
-Generate a backup code for the `identityKey`. The backup code will be a
-30-character string, starting with the letter `M`. It encodes the identity key
-and can be used to recover the identity key on another device. It should be
+Generate a backup code for the `rootKey`. The backup code will be a
+30-character string, starting with the letter `M`. It encodes the root key
+and can be used to recover the root key on another device. It should be
 treated as a secure password: someone with access to a backup code can
 impersonate the identity of the holder.
 
@@ -78,10 +81,10 @@ API compatible with Corestore-next.
 
 Returns `{ publicKey: Buffer, secretKey: Buffer }`
 
-#### `KeyManager.generateIdentityKey()`
+#### `KeyManager.generateRootKey()`
 
-Static method to generate a new random identity key. This is used to derive a
-master key: all keys are deterministically derived from this identity key, so
+Static method to generate a new random root key. This is used to derive a
+master key: all keys are deterministically derived from this root key, so
 this should only be used once on each device and the key should be securely
 stored.
 
@@ -89,14 +92,14 @@ Returns 16-byte `Buffer` of random data
 
 #### `KeyManager.decodeBackupCode(backupCode)`
 
-Static method to decode an identity key from a backup code. Throws an error if
+Static method to decode a root key from a backup code. Throws an error if
 the CRC check fails.
 
 ##### Parameters
 
 - `backupCode: string` 30-character base32 encoded backup code
 
-Returns `Buffer` The 16-byte identity key encoded in the backup code
+Returns `Buffer` The 16-byte root key encoded in the backup code
 
 ### Project Invites
 

@@ -4,8 +4,8 @@ const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
 
 test('encoding backup code', (t) => {
-  const identityKey = KeyManager.generateIdentityKey()
-  const km = new KeyManager(identityKey)
+  const rootKey = KeyManager.generateRootKey()
+  const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
   t.ok(typeof backupCode === 'string', 'is a string')
   t.ok(backupCode.length === 30, '30 characters long')
@@ -17,17 +17,17 @@ test('encoding backup code', (t) => {
 })
 
 test('decoding backup code', (t) => {
-  const identityKey = KeyManager.generateIdentityKey()
-  const km = new KeyManager(identityKey)
+  const rootKey = KeyManager.generateRootKey()
+  const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
   const decoded = KeyManager.decodeBackupCode(backupCode)
-  t.same(decoded, identityKey)
+  t.same(decoded, rootKey)
   t.end()
 })
 
 test('invalid backup codes', (t) => {
-  const identityKey = KeyManager.generateIdentityKey()
-  const km = new KeyManager(identityKey)
+  const rootKey = KeyManager.generateRootKey()
+  const km = new KeyManager(rootKey)
   const validBackupCode = km.getIdentityBackupCode()
 
   const invalidBackupCodes = [
@@ -57,19 +57,19 @@ test('invalid backup codes', (t) => {
 })
 
 test('identity keypair', (t) => {
-  const identityKey = KeyManager.generateIdentityKey()
-  const km1 = new KeyManager(identityKey)
-  const km2 = new KeyManager(identityKey)
+  const rootKey = KeyManager.generateRootKey()
+  const km1 = new KeyManager(rootKey)
+  const km2 = new KeyManager(rootKey)
   t.same(km1.getIdentityKeypair(), km2.getIdentityKeypair())
   t.ok(validateSignKeypair(km1.getIdentityKeypair()))
   t.end()
 })
 
 test('hypercore keypair', (t) => {
-  const identityKey = KeyManager.generateIdentityKey()
+  const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
-  const km1 = new KeyManager(identityKey)
-  const km2 = new KeyManager(identityKey)
+  const km1 = new KeyManager(rootKey)
+  const km2 = new KeyManager(rootKey)
   t.ok(validateSignKeypair(km1.getHypercoreKeypair('foo', namespace)))
   t.same(
     km1.getHypercoreKeypair('foo', namespace),

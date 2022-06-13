@@ -2,7 +2,7 @@
 const sodium = require('sodium-native')
 const assert = require('assert')
 const {
-  deriveMasterKeyFromIdentityKey,
+  deriveMasterKeyFromRootKey,
   deriveNamedKey,
   signKeypair,
 } = require('./lib/key-utils')
@@ -10,7 +10,7 @@ const StringEncoding = require('./lib/string-encoding')
 const ByteEncoding = require('./lib/byte-encoding')
 const calculateCrc16 = require('crc/lib/crc16_ccitt')
 
-const IDENTITY_BYTES = 16
+const ROOTKEY_BYTES = 16
 const BACKUP_CODE_IDENTIFIER = 'M'
 
 /** @typedef {import('./lib/key-utils').Keypair} Keypair */
@@ -18,8 +18,8 @@ const BACKUP_CODE_IDENTIFIER = 'M'
 /**
  * The KeyManager class derives the key pairs used for identifying the device
  * and for all the hypercores on the device. All the key pairs are generated
- * deterministically from a single 16-byte identity key. The backup code can be
- * used to backup this identity and recover it on a new device. The identity key
+ * deterministically from a single 16-byte root key. The backup code can be
+ * used to backup this identity and recover it on a new device. The root key
  * and backup code must be kept secret at all times - someone who has this key
  * can impersonate the user to another Mapeo user.
  */
@@ -27,18 +27,18 @@ class KeyManager {
   /** @private */
   _masterKey
   /** @private */
-  _identityKey
+  _rootKey
 
   /**
-   * @param {Buffer} identityKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+   * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
    */
-  constructor(identityKey) {
+  constructor(rootKey) {
     assert(
-      identityKey.length === IDENTITY_BYTES,
-      `identityKey must be ${IDENTITY_BYTES} bytes`
+      rootKey.length === ROOTKEY_BYTES,
+      `rootKey must be ${ROOTKEY_BYTES} bytes`
     )
-    this._identityKey = identityKey
-    this._masterKey = deriveMasterKeyFromIdentityKey(identityKey)
+    this._rootKey = rootKey
+    this._masterKey = deriveMasterKeyFromRootKey(rootKey)
   }
 
   /**
@@ -52,9 +52,9 @@ class KeyManager {
   }
 
   getIdentityBackupCode() {
-    const crc16 = calculateCrc16(this._identityKey)
+    const crc16 = calculateCrc16(this._rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
-      identityKey: this._identityKey,
+      rootKey: this._rootKey,
       crc16,
     })
     return (
@@ -99,18 +99,18 @@ class KeyManager {
    *
    * @returns {Buffer}
    */
-  static generateIdentityKey() {
-    const buf = sodium.sodium_malloc(IDENTITY_BYTES)
+  static generateRootKey() {
+    const buf = sodium.sodium_malloc(ROOTKEY_BYTES)
     sodium.randombytes_buf(buf)
     return buf
   }
 
   /**
-   * Decode the identity key from a backup code. Throws an error if the CRC
+   * Decode the root key from a backup code. Throws an error if the CRC
    * check fails.
    *
    * @param {string} stringEncodedBackupCode
-   * @returns {Buffer} The 16-byte identity key encoded in the backup code
+   * @returns {Buffer} The 16-byte root key encoded in the backup code
    */
   static decodeBackupCode(stringEncodedBackupCode) {
     assert(
@@ -129,21 +129,21 @@ class KeyManager {
     } catch (err) {
       throw new Error('Invalid backup code: invalid base32 encoding')
     }
-    let identityKey
+    let rootKey
     let crc16
     try {
       const backupCode = ByteEncoding.backupCode.decode(byteEncodedBackupCode)
-      identityKey = backupCode.identityKey
+      rootKey = backupCode.rootKey
       crc16 = backupCode.crc16
     } catch (err) {
       /* istanbul ignore next - can't find a way to reach here, since assertions will throw before this */
       throw new Error('Invalid backup code: invalid byte encoding')
     }
-    const calculatedCrc16 = calculateCrc16(identityKey)
+    const calculatedCrc16 = calculateCrc16(rootKey)
     if (crc16 !== calculatedCrc16) {
       throw new Error(`Invalid backup code: CRC mismatch`)
     }
-    return identityKey
+    return rootKey
   }
 
   static BACKUP_CODE_IDENTIFIER = BACKUP_CODE_IDENTIFIER
