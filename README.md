@@ -8,9 +8,6 @@ Key management and encryption / decryption functions for Mapeo.
 
 ## Table of Contents
 
-- [@mapeo/crypto](#mapeocrypto)
-- [Table of Contents](#table-of-contents)
-- [API](#api)
   - [KeyManager](#keymanager)
       - [Parameters](#parameters)
     - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
