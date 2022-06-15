@@ -82,7 +82,7 @@ class KeyManager {
    */
   getDiscoveryKey(publicKey) {
     const digest = Buffer.allocUnsafe(32)
-    sodium.crypto_generichash(digest, 'mapeo/alpha', publicKey)
+    sodium.crypto_generichash(digest, Buffer.from('mapeo/alpha'), publicKey)
     return digest
   }
 
