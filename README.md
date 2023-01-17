@@ -9,23 +9,25 @@ Key management and encryption / decryption functions for Mapeo.
 ## Table of Contents
 
   - [KeyManager](#keymanager)
-      - [Parameters](#parameters)
+    - [Parameters](#parameters)
     - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
     - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
     - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
       - [Parameters](#parameters-1)
+    - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
+      - [Parameters](#parameters-2)
     - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
     - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
-      - [Parameters](#parameters-2)
+      - [Parameters](#parameters-3)
   - [Project Invites](#project-invites)
     - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
-      - [Parameters](#parameters-3)
-    - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
       - [Parameters](#parameters-4)
-    - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
+    - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
       - [Parameters](#parameters-5)
-    - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+    - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
       - [Parameters](#parameters-6)
+    - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+      - [Parameters](#parameters-7)
   - [Type `JoinRequest`](#type-joinrequest)
 
 ## API
@@ -77,6 +79,18 @@ API compatible with Corestore-next.
 - `namespace: Buffer` 32-byte namespace
 
 Returns `{ publicKey: Buffer, secretKey: Buffer }`
+
+#### `km.getDerivedKey(name, namespace)`
+
+Generate a derived key for the given name. Deterministic: the same key will be
+generated for the same name if the identity key is the same.
+
+##### Parameters
+
+- `name: string` Local name for the key
+- `namespace: Buffer` 32-byte namespace
+
+Returns 32-byte `Buffer`
 
 #### `KeyManager.generateRootKey()`
 

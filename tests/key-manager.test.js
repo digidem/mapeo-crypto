@@ -3,7 +3,7 @@ const { test } = require('tap')
 const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
 
-test('encoding backup code', (t) => {
+test('encoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -16,7 +16,7 @@ test('encoding backup code', (t) => {
   t.end()
 })
 
-test('decoding backup code', (t) => {
+test('decoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -25,7 +25,7 @@ test('decoding backup code', (t) => {
   t.end()
 })
 
-test('invalid backup codes', (t) => {
+test('invalid backup codes', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const validBackupCode = km.getIdentityBackupCode()
@@ -47,7 +47,7 @@ test('invalid backup codes', (t) => {
     // transcription error
     validBackupCode.slice(0, 5) +
       (validBackupCode.charAt(5) === 'W' ? 'V' : 'W') +
-      validBackupCode.slice(6),
+      validBackupCode.slice(6)
   ]
 
   for (const code of invalidBackupCodes) {
@@ -56,7 +56,7 @@ test('invalid backup codes', (t) => {
   t.end()
 })
 
-test('identity keypair', (t) => {
+test('identity keypair', t => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
@@ -65,7 +65,7 @@ test('identity keypair', (t) => {
   t.end()
 })
 
-test('hypercore keypair', (t) => {
+test('hypercore keypair', t => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
@@ -74,6 +74,18 @@ test('hypercore keypair', (t) => {
   t.same(
     km1.getHypercoreKeypair('foo', namespace),
     km2.getHypercoreKeypair('foo', namespace)
+  )
+  t.end()
+})
+
+test('deterministic getDerivedKey', t => {
+  const rootKey = KeyManager.generateRootKey()
+  const namespace = Buffer.alloc(32, 5)
+  const km1 = new KeyManager(rootKey)
+  const km2 = new KeyManager(rootKey)
+  t.same(
+    km1.getDerivedKey('foo', namespace),
+    km2.getDerivedKey('foo', namespace)
   )
   t.end()
 })
