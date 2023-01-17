@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.4](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2023-01-17)
+
+
+### Features
+
+* Add getDerivedKey() method ([d725f4f](https://github.com/digidem/mapeo-crypto/commit/d725f4fa3be0007052f7cb9418b87bdde77718b1))
+
 ## [1.0.0-alpha.3](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2023-01-17)
 
 
