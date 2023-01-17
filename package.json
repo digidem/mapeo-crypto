@@ -3,11 +3,12 @@
   "version": "1.0.0-alpha.2",
   "description": "Key management and encryption / decryption functions for Mapeo",
   "main": "index.js",
+  "types": "dist",
   "scripts": {
     "test": "npm run type & npm run tap",
     "tap": "tap",
     "posttest": "mkdir -p coverage && tap --coverage-report=text-lcov > ./coverage/lcov.info",
-    "type": "tsc --noEmit",
+    "type": "tsc",
     "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'"
   },
   "keywords": [],
