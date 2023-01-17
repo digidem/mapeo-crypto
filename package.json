@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "dist",
   "scripts": {
-    "test": "npm run type & npm run tap",
+    "test": "npm run type & npm run tap \"tests/*.test.js\" \"lib/*.test.js\"",
     "tap": "tap",
     "posttest": "mkdir -p coverage && tap --coverage-report=text-lcov > ./coverage/lcov.info",
     "prepublishOnly": "npm test",
