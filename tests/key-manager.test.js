@@ -2,6 +2,7 @@
 const { test } = require('tap')
 const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
+const { randomBytes } = require('crypto')
 
 test('encoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
@@ -87,5 +88,23 @@ test('deterministic getDerivedKey', t => {
     km1.getDerivedKey('foo', namespace),
     km2.getDerivedKey('foo', namespace)
   )
+  t.end()
+})
+
+test('encrypt and decrypt', t => {
+  const message = Buffer.from('hello world')
+  const rootKey = KeyManager.generateRootKey()
+  const projectId = randomBytes(32).toString('hex')
+  const km = new KeyManager(rootKey)
+
+  const cypher = km.encryptLocalMessage(message, projectId)
+  // Not testing cryptographic security, but at least avoiding silly mistakes
+  t.notSame(
+    cypher,
+    message,
+    'encrypted data is not the same as original message'
+  )
+  const decrypted = km.decryptLocalMessage(cypher, projectId)
+  t.same(decrypted, message, 'message correctly decrypted')
   t.end()
 })
