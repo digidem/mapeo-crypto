@@ -8,27 +8,29 @@ Key management and encryption / decryption functions for Mapeo.
 
 ## Table of Contents
 
-  - [KeyManager](#keymanager)
-    - [Parameters](#parameters)
-    - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
-    - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
-    - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
-      - [Parameters](#parameters-1)
-    - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
-      - [Parameters](#parameters-2)
-    - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
-    - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
-      - [Parameters](#parameters-3)
-  - [Project Invites](#project-invites)
-    - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
-      - [Parameters](#parameters-4)
-    - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
-      - [Parameters](#parameters-5)
-    - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
-      - [Parameters](#parameters-6)
-    - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
-      - [Parameters](#parameters-7)
-  - [Type `JoinRequest`](#type-joinrequest)
+- [KeyManager](#keymanager)
+  - [Parameters](#parameters)
+  - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
+  - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
+  - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
+    - [Parameters](#parameters-1)
+  - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
+    - [Parameters](#parameters-2)
+  - [`km.decryptLocalMessage(cypherText, projectId)`](#kmdecryptLocalMessagecypherText-projectId)
+  - [`km.encryptLocalMessage(msg, projectId)`](#kmencryptLocalMessagemsg-projectId)
+  - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
+  - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
+    - [Parameters](#parameters-3)
+- [Project Invites](#project-invites)
+  - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
+    - [Parameters](#parameters-4)
+  - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
+    - [Parameters](#parameters-5)
+  - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
+    - [Parameters](#parameters-6)
+  - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+    - [Parameters](#parameters-7)
+- [Type `JoinRequest`](#type-joinrequest)
 
 ## API
 
@@ -91,6 +93,27 @@ generated for the same name if the identity key is the same.
 - `namespace: Buffer` 32-byte namespace
 
 Returns 32-byte `Buffer`
+
+#### `km.decryptLocalMessage(cypherText, projectId)`
+
+Decrypt an encrypted message (uses the first 24 bytes of the projectId as a nonce)
+
+##### Parameters
+
+- `cyphertext: Buffer` Encrypted message to decrypt
+- `projectId: string` projectId - 32-byte hex-encoded string
+
+#### `km.encryptLocalMessage(msg, projectId)`
+
+Encrypt a message (uses the first 24 bytes of the projectId as a nonce)
+This should only be used for encrypting local messages, not for sending
+messages over the internet, because the nonce is non-random, so messages
+could be subject to replay attacks.
+
+##### Parameters
+
+- `msg: Buffer` Message to encrypt
+- `projectId` projectId - 32-byte hex-encoded string
 
 #### `KeyManager.generateRootKey()`
 
