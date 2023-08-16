@@ -13,7 +13,11 @@
     "emitDeclarationOnly": true,
     "declarationDir": "dist",
     "declarationMap": true,
-    "typeRoots": ["types", "node_modules/@types"]
+    "typeRoots": [
+      "types",
+      "node_modules/@types",
+      "node_modules/@digidem/types/vendor"
+    ]
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "dist"]
