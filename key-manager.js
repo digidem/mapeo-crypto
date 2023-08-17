@@ -119,6 +119,17 @@ class KeyManager {
   }
 
   /**
+   * Generate a keypair for a new project. The public key of this keypair
+   * becomes the project key. The keypair should be used as the keypair for the
+   * hypercore in the 'auth' namespace for the project creator.
+   *
+   * This keypair is non-deterministic, it must be persisted somewhere.
+   */
+  static generateProjectKeypair () {
+    return signKeypair()
+  }
+
+  /**
    * Decode the root key from a backup code. Throws an error if the CRC
    * check fails.
    *

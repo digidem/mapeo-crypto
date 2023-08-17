@@ -8,27 +8,27 @@ Key management and encryption / decryption functions for Mapeo.
 
 ## Table of Contents
 
-  - [KeyManager](#keymanager)
-    - [Parameters](#parameters)
-    - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
-    - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
-    - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
-      - [Parameters](#parameters-1)
-    - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
-      - [Parameters](#parameters-2)
-    - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
-    - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
-      - [Parameters](#parameters-3)
-  - [Project Invites](#project-invites)
-    - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
-      - [Parameters](#parameters-4)
-    - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
-      - [Parameters](#parameters-5)
-    - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
-      - [Parameters](#parameters-6)
-    - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
-      - [Parameters](#parameters-7)
-  - [Type `JoinRequest`](#type-joinrequest)
+- [KeyManager](#keymanager)
+  - [Parameters](#parameters)
+  - [`km.getIdentityKeypair()`](#kmgetidentitykeypair)
+  - [`km.getIdentityBackupCode()`](#kmgetidentitybackupcode)
+  - [`km.getHypercoreKeypair(name, namespace)`](#kmgethypercorekeypairname-namespace)
+    - [Parameters](#parameters-1)
+  - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
+    - [Parameters](#parameters-2)
+  - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
+  - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
+    - [Parameters](#parameters-3)
+- [Project Invites](#project-invites)
+  - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
+    - [Parameters](#parameters-4)
+  - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
+    - [Parameters](#parameters-5)
+  - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
+    - [Parameters](#parameters-6)
+  - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+    - [Parameters](#parameters-7)
+- [Type `JoinRequest`](#type-joinrequest)
 
 ## API
 
@@ -111,6 +111,14 @@ the CRC check fails.
 - `backupCode: string` 30-character base32 encoded backup code
 
 Returns `Buffer` The 16-byte root key encoded in the backup code
+
+#### `KeyManager.generateProjectKeypair()`
+
+Generate a keypair for a new project. The public key of this keypair becomes the project key. The keypair should be used as the keypair for the hypercore in the 'auth' namespace for the project creator.
+
+This keypair is non-deterministic, it must be persisted somewhere.
+
+Returns `{ publicKey: Buffer, secretKey: Buffer }`
 
 ### Project Invites
 

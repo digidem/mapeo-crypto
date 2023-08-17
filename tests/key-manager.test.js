@@ -2,6 +2,8 @@
 const { test } = require('tap')
 const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
+const Hypercore = require('hypercore')
+const RAM = require('random-access-memory')
 
 test('encoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
@@ -87,5 +89,42 @@ test('deterministic getDerivedKey', t => {
     km1.getDerivedKey('foo', namespace),
     km2.getDerivedKey('foo', namespace)
   )
+  t.end()
+})
+
+test('projectKeypair can be used to create a hypercore', async t => {
+  /** @type {Record<string, RAM>} */
+  const st = {}
+  const keyPair = KeyManager.generateProjectKeypair()
+  // @ts-ignore
+  const core = new Hypercore(open, { keyPair, valueEncoding: 'utf-8' })
+  await core.ready()
+  await core.append('hello')
+
+  // re-open hypercore with keypair and check we can still write to it
+  // @ts-ignore
+  const reopen = new Hypercore(open, { keyPair, valueEncoding: 'utf-8' })
+  await reopen.ready()
+  await reopen.append('world')
+
+  const blocks = await Promise.all([reopen.get(0), reopen.get(1)])
+  t.same(blocks, ['hello', 'world'])
+
+  await reopen.close()
+
+  /** @param {string} name */
+  function open (name) {
+    if (st[name]) return st[name]
+    st[name] = new RAM()
+    return st[name]
+  }
+})
+
+test('projectKeypair is non-deterministic (always changes)', t => {
+  // Not a strong test, but catches an error where we might pass a seed
+  // internally so that the same keypair is always generated
+  const keypair1 = KeyManager.generateProjectKeypair()
+  const keypair2 = KeyManager.generateProjectKeypair()
+  t.notSame(keypair1, keypair2, 'keys are different')
   t.end()
 })
