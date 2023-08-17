@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.5](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2023-08-17)
+
+
+### Features
+
+* Add generateProjectKeypair() static method ([#5](https://github.com/digidem/mapeo-crypto/issues/5)) ([5499cd1](https://github.com/digidem/mapeo-crypto/commit/5499cd1e1351d243b198d461cd7335a62808be41)), closes [#4](https://github.com/digidem/mapeo-crypto/issues/4)
+
+
+### Bug Fixes
+
+* add encrypt and decrypt methods to KeyManager ([#6](https://github.com/digidem/mapeo-crypto/issues/6)) ([0a6dd52](https://github.com/digidem/mapeo-crypto/commit/0a6dd528f8346990974571f06655008c7058bab6))
+
 ## [1.0.0-alpha.4](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2023-01-17)
 
 
