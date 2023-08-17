@@ -135,6 +135,14 @@ the CRC check fails.
 
 Returns `Buffer` The 16-byte root key encoded in the backup code
 
+#### `KeyManager.generateProjectKeypair()`
+
+Generate a keypair for a new project. The public key of this keypair becomes the project key. The keypair should be used as the keypair for the hypercore in the 'auth' namespace for the project creator.
+
+This keypair is non-deterministic, it must be persisted somewhere.
+
+Returns `{ publicKey: Buffer, secretKey: Buffer }`
+
 ### Project Invites
 
 ```js
