@@ -89,6 +89,53 @@ class KeyManager {
   }
 
   /**
+   * Decrypt an encrypted message (uses the first 24 bytes of the projectId as a nonce)
+   *
+   * @param {Buffer} cyphertext
+   * @param {string} projectId
+   */
+  decryptLocalMessage (cyphertext, projectId) {
+    const nonce = nonceFromProjectId(projectId)
+    const msg = Buffer.alloc(
+      cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
+    )
+    sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+      msg,
+      null,
+      cyphertext,
+      null,
+      nonce,
+      this._masterKey
+    )
+    return msg
+  }
+
+  /**
+   * Encrypt a message (uses the first 24 bytes of the projectId as a nonce)
+   * This should only be used for encrypting local messages, not for sending
+   * messages over the internet, because the nonce is non-random, so messages
+   * could be subject to replay attacks
+   *
+   * @param {Buffer} msg
+   * @param {string} projectId
+   */
+  encryptLocalMessage (msg, projectId) {
+    const nonce = nonceFromProjectId(projectId)
+    const cyphertext = Buffer.alloc(
+      msg.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
+    )
+    sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
+      cyphertext,
+      msg,
+      null,
+      null,
+      nonce,
+      this._masterKey
+    )
+    return cyphertext
+  }
+
+  /**
    * Generate a derived keypair for the given name. Deterministic: the same
    * keypair will be generated for the same name if the identity key is the
    * same.
@@ -174,3 +221,11 @@ class KeyManager {
 }
 
 module.exports = KeyManager
+
+/** @param {string} projectId */
+function nonceFromProjectId (projectId) {
+  return Buffer.from(projectId, 'hex').subarray(
+    0,
+    sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
+  )
+}
