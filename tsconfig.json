@@ -19,6 +19,6 @@
       "node_modules/@digidem/types/vendor"
     ]
   },
-  "include": ["**/*"],
+  "include": ["index.js"],
   "exclude": ["node_modules", "dist"]
 }
