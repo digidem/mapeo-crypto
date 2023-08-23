@@ -16,20 +16,27 @@ Key management and encryption / decryption functions for Mapeo.
     - [Parameters](#parameters-1)
   - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
     - [Parameters](#parameters-2)
-  - [`km.decryptLocalMessage(cypherText, projectId)`](#kmdecryptLocalMessagecypherText-projectId)
-  - [`km.encryptLocalMessage(msg, projectId)`](#kmencryptLocalMessagemsg-projectId)
+  - [`km.decryptLocalMessage(cypherText, projectId)`](#kmdecryptlocalmessagecyphertext-projectid)
+    - [Parameters](#parameters-3)
+  - [`km.encryptLocalMessage(msg, projectId)`](#kmencryptlocalmessagemsg-projectid)
+    - [Parameters](#parameters-4)
   - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
   - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
-    - [Parameters](#parameters-3)
+    - [Parameters](#parameters-5)
+  - [`KeyManager.generateProjectKeypair()`](#keymanagergenerateprojectkeypair)
 - [Project Invites](#project-invites)
   - [`invites.encodeJoinRequest(joinRequest, options)`](#invitesencodejoinrequestjoinrequest-options)
-    - [Parameters](#parameters-4)
-  - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
-    - [Parameters](#parameters-5)
-  - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
     - [Parameters](#parameters-6)
-  - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+  - [`invites.decodeJoinRequest(str, options)`](#invitesdecodejoinrequeststr-options)
     - [Parameters](#parameters-7)
+  - [`invites.generateInvite(joinRequest, options)`](#invitesgenerateinvitejoinrequest-options)
+    - [Parameters](#parameters-8)
+  - [`invites.decodeInviteSecretMessage(invite, identityPublicKey, identitySecretKey, options)`](#invitesdecodeinvitesecretmessageinvite-identitypublickey-identitysecretkey-options)
+    - [Parameters](#parameters-9)
+- [`sign(message, secretKey)`](#signmessage-secretkey)
+  - [Parameters](#parameters-10)
+- [`verify(message, signature, publicKey)`](#verifymessage-signature-publickey)
+  - [Parameters](#parameters-11)
 - [Type `JoinRequest`](#type-joinrequest)
 
 ## API
@@ -225,6 +232,29 @@ decrypted message includes the project key for the project the invite is for.
   - `options.encoding: 'base32' | 'base62'` Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
 
 Returns `{ projectKey: Buffer, encryptionKey?: Buffer }` Decrypted secret project key and optional encryption key.
+
+### `sign(message, secretKey)`
+
+Sign `message` using `secretKey`
+
+#### Parameters
+
+- `message: Buffer`
+- `secretKey: Buffer`
+
+Returns `Buffer` signature of the message
+
+### `verify(message, signature, publicKey)`
+
+Verify that `signature` is a valid signature of `message` created by the owner of `publicKey`.
+
+#### Parameters
+
+- `message: Buffer`
+- `signature: Buffer`
+- `publicKey: Buffer`
+
+Returns `boolean` indicating if valid or not.
 
 ### Type `JoinRequest`
 
