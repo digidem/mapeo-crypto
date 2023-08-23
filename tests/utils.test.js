@@ -1,7 +1,7 @@
 // @ts-check
 const { test } = require('tap')
 const { randomBytes } = require('crypto')
-const { KeyManager, sign, verify } = require('../')
+const { KeyManager, sign, verifySignature } = require('../')
 
 test('sign & verify', function (t) {
   const km = new KeyManager(randomBytes(16))
@@ -11,7 +11,7 @@ test('sign & verify', function (t) {
   const sig = sign(message, keyPair.secretKey)
 
   t.equal(sig.length, 64)
-  t.ok(verify(message, sig, keyPair.publicKey))
-  t.notOk(verify(message, Buffer.alloc(64), keyPair.publicKey))
+  t.ok(verifySignature(message, sig, keyPair.publicKey))
+  t.notOk(verifySignature(message, Buffer.alloc(64), keyPair.publicKey))
   t.end()
 })

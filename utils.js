@@ -21,6 +21,6 @@ exports.sign = function (message, secretKey) {
  * @param {Buffer} publicKey public key of keypair used to sign message
  * @returns {boolean}
  */
-exports.verify = function (message, signature, publicKey) {
+exports.verifySignature = function (message, signature, publicKey) {
   return sodium.crypto_sign_verify_detached(signature, message, publicKey)
 }
