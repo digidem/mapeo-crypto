@@ -1,6 +1,6 @@
 // @ts-check
 const { test } = require('tap')
-const { randomBytes } = require('node:crypto')
+const { randomBytes } = require('crypto')
 const { KeyManager, sign, verify } = require('../')
 
 test('sign & verify', function (t) {
