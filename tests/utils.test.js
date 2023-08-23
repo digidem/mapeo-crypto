@@ -1,7 +1,13 @@
 // @ts-check
 const { test } = require('tap')
-const { randomBytes } = require('crypto')
-const { KeyManager, sign, verifySignature } = require('../')
+const { randomBytes, createHash } = require('crypto')
+const {
+  KeyManager,
+  sign,
+  verifySignature,
+  projectKeyToPublicId
+} = require('../')
+const z32 = require('z32')
 
 test('sign & verify', function (t) {
   const km = new KeyManager(randomBytes(16))
@@ -13,5 +19,22 @@ test('sign & verify', function (t) {
   t.equal(sig.length, 64)
   t.ok(verifySignature(message, sig, keyPair.publicKey))
   t.notOk(verifySignature(message, Buffer.alloc(64), keyPair.publicKey))
+  t.end()
+})
+
+test('project public ID', function (t) {
+  const projectKey = createHash('sha256').update('test key').digest()
+  const projectPublicId = projectKeyToPublicId(projectKey)
+  t.equal(
+    projectPublicId,
+    'zmpu4uwx5eze9jmug6ycgwnirsy4rzfym3c4987gpjsdxzmomi4o',
+    'checks for consistency - a change is a breaking change'
+  )
+  t.equal(projectKeyToPublicId(projectKey), projectPublicId, 'deterministic')
+  t.notSame(
+    z32.decode(projectPublicId),
+    projectKey,
+    "didn't do something dumb and encode without hashing"
+  )
   t.end()
 })
