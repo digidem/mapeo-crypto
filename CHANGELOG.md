@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.6](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2023-08-23)
+
+
+### Features
+
+* Add projectKeyToPublicId() function ([#13](https://github.com/digidem/mapeo-crypto/issues/13)) ([e78eba3](https://github.com/digidem/mapeo-crypto/commit/e78eba3470615518d97dcbfe2715b4bd27a950cc))
+* add sign & verify functions ([#12](https://github.com/digidem/mapeo-crypto/issues/12)) ([43488d1](https://github.com/digidem/mapeo-crypto/commit/43488d198e3cae3a6fc5d48ff7c521ecbdeda8f1))
+
 ## [1.0.0-alpha.5](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2023-08-17)
 
 
