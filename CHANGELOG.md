@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.7](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2023-08-24)
+
+
+### Bug Fixes
+
+* support named ESM named exports ([#16](https://github.com/digidem/mapeo-crypto/issues/16)) ([4e9e59b](https://github.com/digidem/mapeo-crypto/commit/4e9e59bd73b51baec5aa394f0647c696acdb5b81))
+
 ## [1.0.0-alpha.6](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2023-08-23)
 
 
