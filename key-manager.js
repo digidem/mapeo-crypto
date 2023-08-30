@@ -1,7 +1,6 @@
 // @ts-check
 const sodium = require('sodium-native')
 const assert = require('assert')
-const z32 = require('z32')
 const {
   deriveMasterKeyFromRootKey,
   deriveNamedKey,
