@@ -2,7 +2,6 @@
 const { test } = require('tap')
 const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
-const { randomBytes } = require('crypto')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
 
@@ -96,8 +95,9 @@ test('deterministic getDerivedKey', t => {
 test('encrypt and decrypt', t => {
   const message = Buffer.from('hello world')
   const rootKey = KeyManager.generateRootKey()
-  const projectId = randomBytes(32).toString('hex')
   const km = new KeyManager(rootKey)
+  const projectKey = KeyManager.generateProjectKeypair().publicKey
+  const projectId = projectKeyToPublicId(projectKey)
 
   const cypher = km.encryptLocalMessage(message, projectId)
   // Not testing cryptographic security, but at least avoiding silly mistakes

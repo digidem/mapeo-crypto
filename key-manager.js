@@ -1,6 +1,7 @@
 // @ts-check
 const sodium = require('sodium-native')
 const assert = require('assert')
+const z32 = require('z32')
 const {
   deriveMasterKeyFromRootKey,
   deriveNamedKey,
@@ -222,10 +223,12 @@ class KeyManager {
 
 module.exports = KeyManager
 
-/** @param {string} projectId */
-function nonceFromProjectId (projectId) {
-  return Buffer.from(projectId, 'hex').subarray(
-    0,
-    sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-  )
+/** @param {string} projectId z-base-32 encoded hash of the project key */
+function nonceFromProjectId(projectId) {
+  const decoded = z32.decode(projectId)
+  return Buffer.from(
+    decoded.buffer,
+    decoded.byteOffset,
+    decoded.byteLength
+  ).subarray(0, sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
 }
