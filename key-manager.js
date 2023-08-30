@@ -89,13 +89,12 @@ class KeyManager {
   }
 
   /**
-   * Decrypt an encrypted message (uses the first 24 bytes of the projectId as a nonce)
+   * Decrypt an encrypted message using the provided nonce parameter
    *
    * @param {Buffer} cyphertext
-   * @param {string} projectId
+   * @param {Buffer} nonce 24-byte nonce
    */
-  decryptLocalMessage (cyphertext, projectId) {
-    const nonce = nonceFromProjectId(projectId)
+  decryptLocalMessage (cyphertext, nonce) {
     const msg = Buffer.alloc(
       cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
     )
@@ -111,16 +110,15 @@ class KeyManager {
   }
 
   /**
-   * Encrypt a message (uses the first 24 bytes of the projectId as a nonce)
+   * Encrypt a message using the provided nonce parameter
    * This should only be used for encrypting local messages, not for sending
    * messages over the internet, because the nonce is non-random, so messages
    * could be subject to replay attacks
    *
    * @param {Buffer} msg
-   * @param {string} projectId
+   * @param {Buffer} nonce 24-byte nonce
    */
-  encryptLocalMessage (msg, projectId) {
-    const nonce = nonceFromProjectId(projectId)
+  encryptLocalMessage (msg, nonce) {
     const cyphertext = Buffer.alloc(
       msg.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
     )
@@ -221,11 +219,3 @@ class KeyManager {
 }
 
 module.exports = KeyManager
-
-/** @param {string} projectId */
-function nonceFromProjectId (projectId) {
-  return Buffer.from(projectId, 'hex').subarray(
-    0,
-    sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-  )
-}

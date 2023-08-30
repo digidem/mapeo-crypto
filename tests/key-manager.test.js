@@ -1,8 +1,8 @@
 // @ts-check
 const { test } = require('tap')
+const { randomBytes } = require('crypto')
 const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
-const { randomBytes } = require('crypto')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
 
@@ -96,17 +96,17 @@ test('deterministic getDerivedKey', t => {
 test('encrypt and decrypt', t => {
   const message = Buffer.from('hello world')
   const rootKey = KeyManager.generateRootKey()
-  const projectId = randomBytes(32).toString('hex')
   const km = new KeyManager(rootKey)
+  const nonce = randomBytes(24)
 
-  const cypher = km.encryptLocalMessage(message, projectId)
+  const cypher = km.encryptLocalMessage(message, nonce)
   // Not testing cryptographic security, but at least avoiding silly mistakes
   t.notSame(
     cypher,
     message,
     'encrypted data is not the same as original message'
   )
-  const decrypted = km.decryptLocalMessage(cypher, projectId)
+  const decrypted = km.decryptLocalMessage(cypher, nonce)
   t.same(decrypted, message, 'message correctly decrypted')
   t.end()
 })

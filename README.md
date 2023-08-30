@@ -16,9 +16,9 @@ Key management and encryption / decryption functions for Mapeo.
     - [Parameters](#parameters-1)
   - [`km.getDerivedKey(name, namespace)`](#kmgetderivedkeyname-namespace)
     - [Parameters](#parameters-2)
-  - [`km.decryptLocalMessage(cypherText, projectId)`](#kmdecryptlocalmessagecyphertext-projectid)
+  - [`km.decryptLocalMessage(cypherText, nonce)`](#kmdecryptlocalmessagecyphertext-projectid)
     - [Parameters](#parameters-3)
-  - [`km.encryptLocalMessage(msg, projectId)`](#kmencryptlocalmessagemsg-projectid)
+  - [`km.encryptLocalMessage(msg, nonce)`](#kmencryptlocalmessagemsg-projectid)
     - [Parameters](#parameters-4)
   - [`KeyManager.generateRootKey()`](#keymanagergeneraterootkey)
   - [`KeyManager.decodeBackupCode(backupCode)`](#keymanagerdecodebackupcodebackupcode)
@@ -105,16 +105,16 @@ Returns 32-byte `Buffer`
 
 #### `km.decryptLocalMessage(cypherText, projectId)`
 
-Decrypt an encrypted message (uses the first 24 bytes of the projectId as a nonce)
+Decrypt an encrypted message using the provided nonce parameter
 
 ##### Parameters
 
 - `cyphertext: Buffer` Encrypted message to decrypt
-- `projectId: string` projectId - 32-byte hex-encoded string
+- `nonce: Buffer` 24-byte nonce
 
-#### `km.encryptLocalMessage(msg, projectId)`
+#### `km.encryptLocalMessage(msg, nonce)`
 
-Encrypt a message (uses the first 24 bytes of the projectId as a nonce)
+Encrypt a message using the provided nonce parameter
 This should only be used for encrypting local messages, not for sending
 messages over the internet, because the nonce is non-random, so messages
 could be subject to replay attacks.
@@ -122,7 +122,7 @@ could be subject to replay attacks.
 ##### Parameters
 
 - `msg: Buffer` Message to encrypt
-- `projectId` projectId - 32-byte hex-encoded string
+- `nonce: Buffer` 24-byte nonce
 
 #### `KeyManager.generateRootKey()`
 
