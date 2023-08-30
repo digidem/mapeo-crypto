@@ -4,8 +4,9 @@ const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
+const { projectKeyToPublicId } = require('../utils')
 
-test('encoding backup code', t => {
+test('encoding backup code', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -18,7 +19,7 @@ test('encoding backup code', t => {
   t.end()
 })
 
-test('decoding backup code', t => {
+test('decoding backup code', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -27,7 +28,7 @@ test('decoding backup code', t => {
   t.end()
 })
 
-test('invalid backup codes', t => {
+test('invalid backup codes', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const validBackupCode = km.getIdentityBackupCode()
@@ -49,7 +50,7 @@ test('invalid backup codes', t => {
     // transcription error
     validBackupCode.slice(0, 5) +
       (validBackupCode.charAt(5) === 'W' ? 'V' : 'W') +
-      validBackupCode.slice(6)
+      validBackupCode.slice(6),
   ]
 
   for (const code of invalidBackupCodes) {
@@ -58,7 +59,7 @@ test('invalid backup codes', t => {
   t.end()
 })
 
-test('identity keypair', t => {
+test('identity keypair', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
@@ -67,7 +68,7 @@ test('identity keypair', t => {
   t.end()
 })
 
-test('hypercore keypair', t => {
+test('hypercore keypair', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
@@ -80,7 +81,7 @@ test('hypercore keypair', t => {
   t.end()
 })
 
-test('deterministic getDerivedKey', t => {
+test('deterministic getDerivedKey', (t) => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
@@ -92,7 +93,7 @@ test('deterministic getDerivedKey', t => {
   t.end()
 })
 
-test('encrypt and decrypt', t => {
+test('encrypt and decrypt', (t) => {
   const message = Buffer.from('hello world')
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
@@ -111,7 +112,7 @@ test('encrypt and decrypt', t => {
   t.end()
 })
 
-test('projectKeypair can be used to create a hypercore', async t => {
+test('projectKeypair can be used to create a hypercore', async (t) => {
   /** @type {Record<string, RAM>} */
   const st = {}
   const keyPair = KeyManager.generateProjectKeypair()
@@ -132,14 +133,14 @@ test('projectKeypair can be used to create a hypercore', async t => {
   await reopen.close()
 
   /** @param {string} name */
-  function open (name) {
+  function open(name) {
     if (st[name]) return st[name]
     st[name] = new RAM()
     return st[name]
   }
 })
 
-test('projectKeypair is non-deterministic (always changes)', t => {
+test('projectKeypair is non-deterministic (always changes)', (t) => {
   // Not a strong test, but catches an error where we might pass a seed
   // internally so that the same keypair is always generated
   const keypair1 = KeyManager.generateProjectKeypair()
