@@ -5,7 +5,7 @@ const z32 = require('z32')
 const {
   deriveMasterKeyFromRootKey,
   deriveNamedKey,
-  signKeypair,
+  signKeypair
 } = require('./lib/key-utils')
 const StringEncoding = require('./lib/string-encoding')
 const ByteEncoding = require('./lib/byte-encoding')
@@ -33,7 +33,7 @@ class KeyManager {
   /**
    * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
    */
-  constructor(rootKey) {
+  constructor (rootKey) {
     assert(
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`
@@ -48,15 +48,15 @@ class KeyManager {
    *
    * @returns {Keypair}
    */
-  getIdentityKeypair() {
+  getIdentityKeypair () {
     return this._signingKeypair('identity')
   }
 
-  getIdentityBackupCode() {
+  getIdentityBackupCode () {
     const crc16 = calculateCrc16(this._rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
       rootKey: this._rootKey,
-      crc16,
+      crc16
     })
     return (
       BACKUP_CODE_IDENTIFIER + StringEncoding.base32.encode(encodedBackupCode)
@@ -71,7 +71,7 @@ class KeyManager {
    * @param {Buffer} namespace 32-byte namespace
    * @returns {Keypair}
    */
-  getHypercoreKeypair(name, namespace) {
+  getHypercoreKeypair (name, namespace) {
     // TODO: For hypercore-next return a sign function
     return this._signingKeypair(name, namespace)
   }
@@ -85,7 +85,7 @@ class KeyManager {
    * @param {Buffer} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
    * @returns {Buffer} 32-byte buffer
    */
-  getDerivedKey(name, token) {
+  getDerivedKey (name, token) {
     return deriveNamedKey(this._masterKey, name, token)
   }
 
@@ -95,7 +95,7 @@ class KeyManager {
    * @param {Buffer} cyphertext
    * @param {Buffer} nonce Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
    */
-  decryptLocalMessage(cyphertext, nonce) {
+  decryptLocalMessage (cyphertext, nonce) {
     const msg = Buffer.alloc(
       cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
     )
@@ -119,7 +119,7 @@ class KeyManager {
    * @param {Buffer} msg
    * @param {Buffer} nonce Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
    */
-  encryptLocalMessage(msg, nonce) {
+  encryptLocalMessage (msg, nonce) {
     const cyphertext = Buffer.alloc(
       msg.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
     )
@@ -144,7 +144,7 @@ class KeyManager {
    * @param {Buffer} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
    * @returns {Keypair}
    */
-  _signingKeypair(name, token) {
+  _signingKeypair (name, token) {
     // TODO: Cache / memoize keypair generation? Is this expensive?
     const seed = this.getDerivedKey(name, token)
     return signKeypair(seed)
@@ -158,7 +158,7 @@ class KeyManager {
    *
    * @returns {Buffer}
    */
-  static generateRootKey() {
+  static generateRootKey () {
     const buf = sodium.sodium_malloc(ROOTKEY_BYTES)
     sodium.randombytes_buf(buf)
     return buf
@@ -171,7 +171,7 @@ class KeyManager {
    *
    * This keypair is non-deterministic, it must be persisted somewhere.
    */
-  static generateProjectKeypair() {
+  static generateProjectKeypair () {
     return signKeypair()
   }
 
@@ -182,7 +182,7 @@ class KeyManager {
    * @param {string} stringEncodedBackupCode
    * @returns {Buffer} The 16-byte root key encoded in the backup code
    */
-  static decodeBackupCode(stringEncodedBackupCode) {
+  static decodeBackupCode (stringEncodedBackupCode) {
     assert(
       stringEncodedBackupCode.startsWith(BACKUP_CODE_IDENTIFIER),
       'Invalid backup code: must start with ' + BACKUP_CODE_IDENTIFIER
