@@ -110,7 +110,7 @@ Decrypt an encrypted message using the provided nonce parameter
 ##### Parameters
 
 - `cyphertext: Buffer` Encrypted message to decrypt
-- `nonce: Buffer` Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
+- `nonce: Buffer` 24-byte nonce
 
 #### `km.encryptLocalMessage(msg, nonce)`
 
@@ -122,7 +122,7 @@ could be subject to replay attacks.
 ##### Parameters
 
 - `msg: Buffer` Message to encrypt
-- `nonce: Buffer` Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
+- `nonce: Buffer` 24-byte nonce
 
 #### `KeyManager.generateRootKey()`
 

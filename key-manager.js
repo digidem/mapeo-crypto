@@ -92,7 +92,7 @@ class KeyManager {
    * Decrypt an encrypted message using the provided nonce parameter
    *
    * @param {Buffer} cyphertext
-   * @param {Buffer} nonce Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
+   * @param {Buffer} nonce 24-byte nonce
    */
   decryptLocalMessage (cyphertext, nonce) {
     const msg = Buffer.alloc(
@@ -116,7 +116,7 @@ class KeyManager {
    * could be subject to replay attacks
    *
    * @param {Buffer} msg
-   * @param {Buffer} nonce Buffer of length sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes
+   * @param {Buffer} nonce 24-byte nonce
    */
   encryptLocalMessage (msg, nonce) {
     const cyphertext = Buffer.alloc(
