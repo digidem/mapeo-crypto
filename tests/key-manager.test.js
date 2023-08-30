@@ -4,6 +4,8 @@ const KeyManager = require('../key-manager')
 const { validateSignKeypair } = require('../lib/key-utils')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
+const sodium = require('sodium-native')
+const z32 = require('z32')
 const { projectKeyToPublicId } = require('../utils')
 
 test('encoding backup code', (t) => {
@@ -99,15 +101,16 @@ test('encrypt and decrypt', (t) => {
   const km = new KeyManager(rootKey)
   const projectKey = KeyManager.generateProjectKeypair().publicKey
   const projectId = projectKeyToPublicId(projectKey)
+  const nonce = nonceFromProjectId(projectId)
 
-  const cypher = km.encryptLocalMessage(message, projectId)
+  const cypher = km.encryptLocalMessage(message, nonceFromProjectId(projectId))
   // Not testing cryptographic security, but at least avoiding silly mistakes
   t.notSame(
     cypher,
     message,
     'encrypted data is not the same as original message'
   )
-  const decrypted = km.decryptLocalMessage(cypher, projectId)
+  const decrypted = km.decryptLocalMessage(cypher, nonce)
   t.same(decrypted, message, 'message correctly decrypted')
   t.end()
 })
@@ -148,3 +151,12 @@ test('projectKeypair is non-deterministic (always changes)', (t) => {
   t.notSame(keypair1, keypair2, 'keys are different')
   t.end()
 })
+
+function nonceFromProjectId(projectId) {
+  const decoded = z32.decode(projectId)
+  return Buffer.from(
+    decoded.buffer,
+    decoded.byteOffset,
+    decoded.byteLength
+  ).subarray(0, sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
+}
