@@ -1,6 +1,6 @@
 {
   "name": "@mapeo/crypto",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "description": "Key management and encryption / decryption functions for Mapeo",
   "main": "index.js",
   "types": "dist",

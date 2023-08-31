@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.8](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.7...v1.0.0-alpha.8) (2023-08-31)
+
+
+### Bug Fixes
+
+* update encryptLocalMessage and decryptLocalMessage methods to accept nonce instead of project ID ([#18](https://github.com/digidem/mapeo-crypto/issues/18)) ([7492165](https://github.com/digidem/mapeo-crypto/commit/7492165b08fb7339923560bbdbfce3f898af268e))
+
 ## [1.0.0-alpha.7](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2023-08-24)
 
 
