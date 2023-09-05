@@ -5,7 +5,7 @@ const {
   KeyManager,
   sign,
   verifySignature,
-  projectKeyToPublicId
+  keyToPublicId
 } = require('../')
 const z32 = require('z32')
 
@@ -22,18 +22,18 @@ test('sign & verify', function (t) {
   t.end()
 })
 
-test('project public ID', function (t) {
-  const projectKey = createHash('sha256').update('test key').digest()
-  const projectPublicId = projectKeyToPublicId(projectKey)
+test('key to public ID', function (t) {
+  const key = createHash('sha256').update('test key').digest()
+  const publicId = keyToPublicId(key)
   t.equal(
-    projectPublicId,
+    publicId,
     'zmpu4uwx5eze9jmug6ycgwnirsy4rzfym3c4987gpjsdxzmomi4o',
     'checks for consistency - a change is a breaking change'
   )
-  t.equal(projectKeyToPublicId(projectKey), projectPublicId, 'deterministic')
+  t.equal(keyToPublicId(key), publicId, 'deterministic')
   t.notSame(
-    z32.decode(projectPublicId),
-    projectKey,
+    z32.decode(publicId),
+    key,
     "didn't do something dumb and encode without hashing"
   )
   t.end()
