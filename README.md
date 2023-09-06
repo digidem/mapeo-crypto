@@ -37,7 +37,7 @@ Key management and encryption / decryption functions for Mapeo.
   - [Parameters](#parameters-10)
 - [`verify(message, signature, publicKey)`](#verifymessage-signature-publickey)
   - [Parameters](#parameters-11)
-- [`projectKeyToPublicId(projectKey)`](#projectkeytopublicidprojectkey)
+- [`keyToPublicId(key)`](#keytopublicidkey)
   - [Parameters](#parameters-12)
 - [Type `JoinRequest`](#type-joinrequest)
 
@@ -258,15 +258,15 @@ Verify that `signature` is a valid signature of `message` created by the owner o
 
 Returns `boolean` indicating if valid or not.
 
-### `projectKeyToPublicId(projectKey)`
+### `keyToPublicId(key)`
 
-Get a project public ID from the project key. The project public ID is a hash of the project key and safe to share publicly. The hash is encoded as [z-base-32](http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt)
+Get a public ID from a key. The public ID is a hash of the key and safe to share publicly. The hash is encoded as [z-base-32](http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt)
 
 #### Parameters
 
-- `projectKey: Buffer`
+- `key: Buffer`
 
-Returns `string` z-base-32 encoded hash of the project key
+Returns `string` z-base-32 encoded hash of the key
 
 ### Type `JoinRequest`
 

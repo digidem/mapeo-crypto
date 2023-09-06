@@ -29,15 +29,15 @@ exports.verifySignature = function (message, signature, publicKey) {
 }
 
 /**
- * Get a project public ID from the project key. The project public ID is a hash
- * of the project key and safe to share publicly. The hash is encoded as
+ * Get a public ID from a key. The public ID is a hash
+ * of the key and safe to share publicly. The hash is encoded as
  * [z-base-32](http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt)
  *
- * @param {Buffer} projectKey
- * @returns {string} z-base-32 encoded hash of the project key
+ * @param {Buffer} key
+ * @returns {string} z-base-32 encoded hash of the key
  */
-exports.projectKeyToPublicId = function (projectKey) {
+exports.keyToPublicId = function (key) {
   const digest = Buffer.allocUnsafe(32)
-  sodium.crypto_generichash(digest, MAPEO, projectKey)
+  sodium.crypto_generichash(digest, MAPEO, key)
   return z32.encode(digest)
 }
