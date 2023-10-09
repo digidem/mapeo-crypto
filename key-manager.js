@@ -1,5 +1,5 @@
 // @ts-check
-const sodium = require('sodium-native')
+const sodium = require('sodium-universal')
 const assert = require('assert')
 const {
   deriveMasterKeyFromRootKey,
