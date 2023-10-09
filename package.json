@@ -24,7 +24,6 @@
     "compact-encoding-net": "^1.0.1",
     "compact-encoding-struct": "^1.2.0",
     "crc": "^3.8.0",
-    "derive-key": "^1.0.1",
     "lodash": "^4.17.21",
     "sodium-universal": "^3.0.4",
     "z32": "^1.0.0"
