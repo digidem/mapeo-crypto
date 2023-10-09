@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.9](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.8...v1.0.0-alpha.9) (2023-10-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename projectKeyToPublicId to keyToPublicId (#19)
+
+### Features
+
+* rename projectKeyToPublicId to keyToPublicId ([#19](https://github.com/digidem/mapeo-crypto/issues/19)) ([a3ec70b](https://github.com/digidem/mapeo-crypto/commit/a3ec70b97318260e2f1593d6abbaeda065cc9407))
+
 ## [1.0.0-alpha.8](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.7...v1.0.0-alpha.8) (2023-08-31)
 
 
