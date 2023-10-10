@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-alpha.10](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.9...v1.0.0-alpha.10) (2023-10-10)
+
+
+### Bug Fixes
+
+* update sodium-native imports to use sodium-universal ([#25](https://github.com/digidem/mapeo-crypto/issues/25)) ([c547989](https://github.com/digidem/mapeo-crypto/commit/c547989b483a0b482b28e01f7309125138698d47))
+
 ## [1.0.0-alpha.9](https://github.com/digidem/mapeo-crypto/compare/v1.0.0-alpha.8...v1.0.0-alpha.9) (2023-10-09)
 
 
