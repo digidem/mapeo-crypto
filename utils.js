@@ -3,6 +3,7 @@ const sodium = require('sodium-universal')
 const z32 = require('z32')
 
 const MAPEO = Buffer.from('mapeo')
+const PROJECT_INVITE_ID_SALT = Buffer.from('mapeo project invite id', 'ascii')
 
 /**
  * Sign message using secretKey
@@ -40,4 +41,15 @@ exports.keyToPublicId = function (key) {
   const digest = Buffer.allocUnsafe(32)
   sodium.crypto_generichash(digest, MAPEO, key)
   return z32.encode(digest)
+}
+
+/**
+ * Generate an invite ID from a project key
+ * @param {Readonly<Buffer>} key
+ * @returns {Buffer}
+ */
+exports.keyToInviteId = function (key) {
+  const digest = Buffer.allocUnsafe(32)
+  sodium.crypto_generichash(digest, PROJECT_INVITE_ID_SALT, key)
+  return digest
 }

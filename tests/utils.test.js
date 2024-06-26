@@ -5,7 +5,8 @@ const {
   KeyManager,
   sign,
   verifySignature,
-  keyToPublicId
+  keyToPublicId,
+  keyToInviteId,
 } = require('../')
 const z32 = require('z32')
 
@@ -34,6 +35,23 @@ test('key to public ID', function (t) {
   t.notSame(
     z32.decode(publicId),
     key,
+    "didn't do something dumb and encode without hashing"
+  )
+  t.end()
+})
+
+test('key to invite ID', (t) => {
+  const key = createHash('sha256').update('test key').digest()
+  const inviteId = keyToInviteId(key)
+  t.same(
+    inviteId,
+    Buffer.from('eQro+t0dzx2AFf3h9Bh5A94i0YdR19xJkq+NGny+IS0=', 'base64'),
+    'checks for consistency - a change is a breaking change'
+  )
+  t.same(keyToInviteId(key), inviteId, 'deterministic')
+  t.notSame(
+    key,
+    inviteId,
     "didn't do something dumb and encode without hashing"
   )
   t.end()
