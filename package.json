@@ -18,7 +18,6 @@
   "dependencies": {
     "@types/b4a": "^1.6.0",
     "b4a": "^1.6.4",
-    "base-x": "^3.0.9",
     "base32.js": "^0.1.0",
     "compact-encoding": "^2.5.1",
     "compact-encoding-net": "^1.0.1",
