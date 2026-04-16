@@ -68,6 +68,25 @@ test('identity keypair', t => {
   t.end()
 })
 
+test('determenistic derive swarm keypair for today', t => {
+  const rootKey = KeyManager.generateRootKey()
+  const km1 = new KeyManager(rootKey)
+  const km2 = new KeyManager(rootKey)
+  t.same(km1.deriveSwarmIdentity(), km2.deriveSwarmIdentity())
+  t.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
+  t.end()
+})
+
+test('determenistic derive swarm keypair for specific date', t => {
+  const rootKey = KeyManager.generateRootKey()
+  const km1 = new KeyManager(rootKey)
+  const km2 = new KeyManager(rootKey)
+  const date = new Date(0)
+  t.same(km1.deriveSwarmIdentity(date), km2.deriveSwarmIdentity(date))
+  t.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
+  t.end()
+})
+
 test('hypercore keypair', t => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)

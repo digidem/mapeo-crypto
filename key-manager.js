@@ -51,6 +51,20 @@ class KeyManager {
     return this._signingKeypair('identity')
   }
 
+  /**
+   * Generate a deterministic ed25519 signing keypair that uniquely identifies
+   * this device for the day. Used for identifying the device on hyperswarm.
+   * Keys change every day to make it harder to track a specific device.
+   * Keys persist accross app restarts.
+   *
+   * @param {Date} [date]
+   * @returns {Keypair}
+   */
+  deriveSwarmIdentity (date = new Date()) {
+    const keyName = `identity-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    return this._signingKeypair(keyName)
+  }
+
   getIdentityBackupCode () {
     const crc16 = calculateCrc16(this._rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
