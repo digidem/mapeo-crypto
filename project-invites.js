@@ -35,7 +35,9 @@ export {
  */
 function encodeJoinRequest(joinRequest, { encoding }) {
   const byteEncodedJoinRequest = ByteEncoding.joinRequest.encode(joinRequest)
-  return (encoding === 'base32' ? base32 : base62).encode(byteEncodedJoinRequest)
+  return (encoding === 'base32' ? base32 : base62).encode(
+    byteEncodedJoinRequest
+  )
 }
 
 /**
@@ -49,7 +51,9 @@ function encodeJoinRequest(joinRequest, { encoding }) {
  */
 function decodeJoinRequest(str, { encoding }) {
   // TODO: validate characters used in encoded string?
-  const byteEncodedJoinRequest = (encoding === 'base32' ? base32 : base62).decode(str)
+  const byteEncodedJoinRequest = (
+    encoding === 'base32' ? base32 : base62
+  ).decode(str)
   return ByteEncoding.joinRequest.decode(byteEncodedJoinRequest)
 }
 
@@ -107,7 +111,9 @@ function decodeInviteSecretMessage(
   { encoding }
 ) {
   // TODO: validate characters used in encoded string?
-  const byteEncodedInvite = (encoding === 'base32' ? base32 : base62).decode(str)
+  const byteEncodedInvite = (encoding === 'base32' ? base32 : base62).decode(
+    str
+  )
   const { ephemeralPublicKey, encryptedMessage } =
     ByteEncoding.invite.decode(byteEncodedInvite)
   const decryptedMessage = decryptMessage(

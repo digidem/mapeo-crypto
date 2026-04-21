@@ -2,7 +2,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'crypto'
-import { boxKeypair, signKeypair } from '../lib/key-utils.js'
+import { signKeypair } from '../lib/key-utils.js'
 import {
   generateInvite,
   decodeInviteSecretMessage,

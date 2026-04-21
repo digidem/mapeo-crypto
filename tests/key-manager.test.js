@@ -49,7 +49,7 @@ test('invalid backup codes', () => {
     // transcription error
     validBackupCode.slice(0, 5) +
       (validBackupCode.charAt(5) === 'W' ? 'V' : 'W') +
-      validBackupCode.slice(6)
+      validBackupCode.slice(6),
   ]
 
   for (const code of invalidBackupCodes) {
@@ -143,7 +143,7 @@ test('projectKeypair can be used to create a hypercore', async () => {
   await reopen.close()
 
   /** @param {string} name */
-  function open (name) {
+  function open(name) {
     if (st[name]) return st[name]
     st[name] = new RAM()
     return st[name]
