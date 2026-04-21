@@ -1,23 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "lib": ["es2020", "dom"],
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "node",
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "declaration": true,
-    "emitDeclarationOnly": true,
     "declarationDir": "dist",
     "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "lib": ["es2022", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "target": "es2019",
     "typeRoots": [
-      "types",
       "node_modules/@types",
-      "node_modules/@digidem/types/vendor"
-    ]
+      "./types"
+    ],
+    "paths": {
+      "@hyperswarm/secret-stream": [
+        "./node_modules/@digidem/types/vendor/@hyperswarm/secret-stream/index.d.ts"
+      ],
+      "*": ["./node_modules/@digidem/types/vendor/*/index.d.ts"]
+    }
   },
   "include": ["index.js"],
   "exclude": ["node_modules", "dist"]

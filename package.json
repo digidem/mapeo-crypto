@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.10",
   "description": "Key management and encryption / decryption functions for Mapeo",
   "main": "index.js",
+  "type": "module",
   "types": "dist",
   "scripts": {
     "test": "npm run type & npm run tap \"tests/*.test.js\" \"lib/*.test.js\"",
@@ -16,33 +17,29 @@
   "author": "Digital Democracy",
   "license": "MIT",
   "dependencies": {
-    "@types/b4a": "^1.6.0",
-    "b4a": "^1.6.4",
     "base-x": "^3.0.9",
     "base32.js": "^0.1.0",
-    "compact-encoding": "^2.5.1",
+    "compact-encoding": "^2.19.2",
     "compact-encoding-net": "^1.0.1",
     "compact-encoding-struct": "^1.2.0",
     "crc": "^3.8.0",
-    "lodash": "^4.17.21",
     "sodium-universal": "^4.0.0",
     "z32": "^1.0.0"
   },
   "devDependencies": {
-    "@digidem/types": "^2.0.0",
+    "@digidem/types": "^2.3.0",
     "@types/compact-encoding": "^2.15.0",
     "@types/crc": "^3.4.0",
-    "@types/lodash": "^4.14.178",
     "@types/node": "^18.17.5",
     "@types/sodium-native": "^2.3.5",
     "@types/tap": "^15.0.5",
     "@types/tape": "^4.13.2",
     "documentation": "^13.2.5",
     "hypercore": "^10.18.5",
-    "prettier": "^2.5.1",
+    "prettier": "^2.8.8",
     "random-access-memory": "^6.2.0",
-    "tap": "^15.1.5",
-    "typescript": "^5.1.6"
+    "tap": "^20.0.3",
+    "typescript": "^5.6.2"
   },
   "directories": {
     "lib": "lib",
