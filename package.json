@@ -6,9 +6,7 @@
   "type": "module",
   "types": "dist",
   "scripts": {
-    "test": "npm run type & npm run tap \"tests/*.test.js\" \"lib/*.test.js\"",
-    "tap": "tap",
-    "posttest": "mkdir -p coverage && tap --coverage-report=text-lcov > ./coverage/lcov.info",
+    "test": "npm run type && node --test tests/*.test.js lib/*.test.js",
     "prepublishOnly": "npm test",
     "type": "tsc",
     "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'"
@@ -32,13 +30,11 @@
     "@types/crc": "^3.4.0",
     "@types/node": "^18.17.5",
     "@types/sodium-native": "^2.3.5",
-    "@types/tap": "^15.0.5",
     "@types/tape": "^4.13.2",
     "documentation": "^13.2.5",
     "hypercore": "^10.18.5",
     "prettier": "^2.8.8",
     "random-access-memory": "^6.2.0",
-    "tap": "^20.0.3",
     "typescript": "^5.6.2"
   },
   "directories": {
