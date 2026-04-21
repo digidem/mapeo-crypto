@@ -1,14 +1,14 @@
 // @ts-check
-const sodium = require('sodium-universal')
-const assert = require('assert')
-const {
+import sodium from 'sodium-universal'
+import assert from 'assert'
+import {
   deriveMasterKeyFromRootKey,
   deriveNamedKey,
-  signKeypair
-} = require('./lib/key-utils')
-const StringEncoding = require('./lib/string-encoding')
-const ByteEncoding = require('./lib/byte-encoding')
-const calculateCrc16 = require('crc/lib/crc16_ccitt')
+  signKeypair,
+} from './lib/key-utils.js'
+import { base32 } from './lib/string-encoding.js'
+import * as ByteEncoding from './lib/byte-encoding.js'
+import calculateCrc16 from 'crc/lib/crc16_ccitt.js'
 
 const ROOTKEY_BYTES = 16
 const BACKUP_CODE_IDENTIFIER = 'M'
@@ -72,7 +72,7 @@ class KeyManager {
       crc16
     })
     return (
-      BACKUP_CODE_IDENTIFIER + StringEncoding.base32.encode(encodedBackupCode)
+      BACKUP_CODE_IDENTIFIER + base32.encode(encodedBackupCode)
     )
   }
 
@@ -206,7 +206,7 @@ class KeyManager {
     )
     let byteEncodedBackupCode
     try {
-      byteEncodedBackupCode = StringEncoding.base32.decode(
+      byteEncodedBackupCode = base32.decode(
         stringEncodedBackupCode.slice(1)
       )
     } catch (err) {
@@ -232,4 +232,4 @@ class KeyManager {
   static BACKUP_CODE_IDENTIFIER = BACKUP_CODE_IDENTIFIER
 }
 
-module.exports = KeyManager
+export default KeyManager

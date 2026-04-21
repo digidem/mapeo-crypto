@@ -1,16 +1,16 @@
 // @ts-check
-const { test } = require('tap')
-const { randomBytes, createHash } = require('crypto')
-const {
+import t from 'tap'
+import { randomBytes, createHash } from 'node:crypto'
+import {
   KeyManager,
   sign,
   verifySignature,
   keyToPublicId,
   keyToInviteId,
-} = require('../')
-const z32 = require('z32')
+} from '../index.js'
+import z32 from 'z32'
 
-test('sign & verify', function (t) {
+t.test('sign & verify', function (t) {
   const km = new KeyManager(randomBytes(16))
   const keyPair = km.getIdentityKeypair()
   const message = Buffer.from('hello world')
@@ -23,7 +23,7 @@ test('sign & verify', function (t) {
   t.end()
 })
 
-test('key to public ID', function (t) {
+t.test('key to public ID', function (t) {
   const key = createHash('sha256').update('test key').digest()
   const publicId = keyToPublicId(key)
   t.equal(
@@ -40,7 +40,7 @@ test('key to public ID', function (t) {
   t.end()
 })
 
-test('key to invite ID', (t) => {
+t.test('key to invite ID', (t) => {
   const key = createHash('sha256').update('test key').digest()
   const inviteId = keyToInviteId(key)
   t.same(

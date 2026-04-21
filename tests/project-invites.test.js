@@ -1,18 +1,18 @@
 // @ts-check
-const { test } = require('tap')
-const crypto = require('crypto')
-const { boxKeypair, signKeypair } = require('../lib/key-utils')
-const {
+import t from 'tap'
+import crypto from 'crypto'
+import { boxKeypair, signKeypair } from '../lib/key-utils.js'
+import {
   generateInvite,
   decodeInviteSecretMessage,
   encodeJoinRequest,
   decodeJoinRequest,
-} = require('../project-invites')
+} from '../project-invites.js'
 
 /** @type {Array<keyof typeof import('../lib/string-encoding')>} */
 const encodings = ['base32', 'base62']
 
-test('can generate and decode invite', (t) => {
+t.test('can generate and decode invite', (t) => {
   for (const encoding of encodings) {
     const projectKey = crypto.randomBytes(32)
     const receiverKeypair = signKeypair()
@@ -32,7 +32,7 @@ test('can generate and decode invite', (t) => {
   t.end()
 })
 
-test('can generate and decode invite with encryption key', (t) => {
+t.test('can generate and decode invite with encryption key', (t) => {
   for (const encoding of encodings) {
     const projectKey = crypto.randomBytes(32)
     const encryptionKey = crypto.randomBytes(32)
@@ -54,7 +54,7 @@ test('can generate and decode invite with encryption key', (t) => {
   t.end()
 })
 
-test('can encode and decode join request', (t) => {
+t.test('can encode and decode join request', (t) => {
   for (const encoding of encodings) {
     const identityPublicKey = crypto.randomBytes(32)
     const joinRequest = { identityPublicKey }

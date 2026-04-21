@@ -1,14 +1,11 @@
 // @ts-check
-const {
+import {
   sign,
   verifySignature,
   keyToPublicId,
   keyToInviteId,
-} = require('./utils.js')
+} from './utils.js'
+import KeyManager from './key-manager.js'
+import * as invites from './project-invites.js'
 
-exports.KeyManager = require('./key-manager')
-exports.invites = require('./project-invites')
-exports.sign = sign
-exports.verifySignature = verifySignature
-exports.keyToPublicId = keyToPublicId
-exports.keyToInviteId = keyToInviteId
+export { KeyManager, invites, sign, verifySignature, keyToPublicId, keyToInviteId }

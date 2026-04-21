@@ -1,12 +1,12 @@
 // @ts-check
-const { test } = require('tap')
-const { randomBytes } = require('crypto')
-const KeyManager = require('../key-manager')
-const { validateSignKeypair } = require('../lib/key-utils')
-const Hypercore = require('hypercore')
-const RAM = require('random-access-memory')
+import t from 'tap'
+import { randomBytes } from 'crypto'
+import KeyManager from '../key-manager.js'
+import { validateSignKeypair } from '../lib/key-utils.js'
+import Hypercore from 'hypercore'
+import RAM from 'random-access-memory'
 
-test('encoding backup code', t => {
+t.test('encoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -19,7 +19,7 @@ test('encoding backup code', t => {
   t.end()
 })
 
-test('decoding backup code', t => {
+t.test('decoding backup code', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
@@ -28,7 +28,7 @@ test('decoding backup code', t => {
   t.end()
 })
 
-test('invalid backup codes', t => {
+t.test('invalid backup codes', t => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const validBackupCode = km.getIdentityBackupCode()
@@ -59,7 +59,7 @@ test('invalid backup codes', t => {
   t.end()
 })
 
-test('identity keypair', t => {
+t.test('identity keypair', t => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
@@ -68,7 +68,7 @@ test('identity keypair', t => {
   t.end()
 })
 
-test('determenistic derive swarm keypair for today', t => {
+t.test('determenistic derive swarm keypair for today', t => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
@@ -77,7 +77,7 @@ test('determenistic derive swarm keypair for today', t => {
   t.end()
 })
 
-test('determenistic derive swarm keypair for specific date', t => {
+t.test('determenistic derive swarm keypair for specific date', t => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
@@ -87,7 +87,7 @@ test('determenistic derive swarm keypair for specific date', t => {
   t.end()
 })
 
-test('hypercore keypair', t => {
+t.test('hypercore keypair', t => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
@@ -100,7 +100,7 @@ test('hypercore keypair', t => {
   t.end()
 })
 
-test('deterministic getDerivedKey', t => {
+t.test('deterministic getDerivedKey', t => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
@@ -112,7 +112,7 @@ test('deterministic getDerivedKey', t => {
   t.end()
 })
 
-test('encrypt and decrypt', t => {
+t.test('encrypt and decrypt', t => {
   const message = Buffer.from('hello world')
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
@@ -130,7 +130,7 @@ test('encrypt and decrypt', t => {
   t.end()
 })
 
-test('projectKeypair can be used to create a hypercore', async t => {
+t.test('projectKeypair can be used to create a hypercore', async t => {
   /** @type {Record<string, RAM>} */
   const st = {}
   const keyPair = KeyManager.generateProjectKeypair()
@@ -158,7 +158,7 @@ test('projectKeypair can be used to create a hypercore', async t => {
   }
 })
 
-test('projectKeypair is non-deterministic (always changes)', t => {
+t.test('projectKeypair is non-deterministic (always changes)', t => {
   // Not a strong test, but catches an error where we might pass a seed
   // internally so that the same keypair is always generated
   const keypair1 = KeyManager.generateProjectKeypair()
