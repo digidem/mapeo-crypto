@@ -1,11 +1,4 @@
-# nyc test coverage
-.nyc_output
-
-# coverage
-/coverage
-
 node_modules
 dist
 
-.tap
 .eslintcache
