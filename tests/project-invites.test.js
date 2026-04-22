@@ -1,15 +1,15 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'crypto'
-import { signKeypair } from '../lib/key-utils.js'
+import { signKeypair } from '../src/lib/key-utils.js'
 import {
   generateInvite,
   decodeInviteSecretMessage,
   encodeJoinRequest,
   decodeJoinRequest,
-} from '../project-invites.js'
+} from '../src/project-invites.js'
 
-/** @type {Array<keyof typeof import('../lib/string-encoding')>} */
+/** @type {Array<keyof typeof import('../src/lib/string-encoding.js')>} */
 const encodings = ['base32', 'base62']
 
 test('can generate and decode invite', () => {

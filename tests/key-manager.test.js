@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { randomBytes } from 'crypto'
-import KeyManager from '../key-manager.js'
-import { validateSignKeypair } from '../lib/key-utils.js'
+import KeyManager from '../src/key-manager.js'
+import { validateSignKeypair } from '../src/lib/key-utils.js'
 import Hypercore from 'hypercore'
 import RAM from 'random-access-memory'
 

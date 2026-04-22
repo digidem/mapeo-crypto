@@ -8,5 +8,5 @@
     "declarationMap": true
   },
   "files": [],
-  "include": ["index.js", "types/**/*.d.ts"]
+  "include": ["src/index.js", "types/**/*.d.ts"]
 }
