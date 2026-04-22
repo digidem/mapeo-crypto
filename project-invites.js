@@ -1,14 +1,13 @@
-// @ts-check
-const ByteEncoding = require('./lib/byte-encoding')
-const { encryptMessage, decryptMessage } = require('./lib/invite-utils')
-const { boxKeypair } = require('./lib/key-utils')
-const StringEncoding = require('./lib/string-encoding')
+import * as ByteEncoding from './lib/byte-encoding.js'
+import { encryptMessage, decryptMessage } from './lib/invite-utils.js'
+import { boxKeypair } from './lib/key-utils.js'
+import { base32, base62 } from './lib/string-encoding.js'
 
 /** @typedef {'base32' | 'base62'} StringEncoding */
-/** @typedef {import('./lib/byte-encoding').JoinRequest } JoinRequest */
-/** @typedef {import('./lib/byte-encoding').InviteSecretMessage } InviteSecretMessage */
+/** @typedef {import('./lib/byte-encoding.js').JoinRequest } JoinRequest */
+/** @typedef {import('./lib/byte-encoding.js').InviteSecretMessage } InviteSecretMessage */
 
-module.exports = {
+export {
   encodeJoinRequest,
   decodeJoinRequest,
   generateInvite,
@@ -35,7 +34,9 @@ module.exports = {
  */
 function encodeJoinRequest(joinRequest, { encoding }) {
   const byteEncodedJoinRequest = ByteEncoding.joinRequest.encode(joinRequest)
-  return StringEncoding[encoding].encode(byteEncodedJoinRequest)
+  return (encoding === 'base32' ? base32 : base62).encode(
+    byteEncodedJoinRequest
+  )
 }
 
 /**
@@ -49,7 +50,9 @@ function encodeJoinRequest(joinRequest, { encoding }) {
  */
 function decodeJoinRequest(str, { encoding }) {
   // TODO: validate characters used in encoded string?
-  const byteEncodedJoinRequest = StringEncoding[encoding].decode(str)
+  const byteEncodedJoinRequest = (
+    encoding === 'base32' ? base32 : base62
+  ).decode(str)
   return ByteEncoding.joinRequest.decode(byteEncodedJoinRequest)
 }
 
@@ -63,7 +66,7 @@ function decodeJoinRequest(str, { encoding }) {
  * than `base64`, because symbols like `+` can break URL parsing (e.g. in an SMS
  * message, only part of a URL before a `+` might be clickable).
  *
- * @param {import('./lib/byte-encoding').JoinRequest} joinRequest Decoded join request
+ * @param {import('./lib/byte-encoding.js').JoinRequest} joinRequest Decoded join request
  * @param {Object} options
  * @param {StringEncoding} options.encoding Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
  * @param {Buffer} options.projectKey Project key for project you wish to generate the invite for
@@ -86,7 +89,7 @@ function generateInvite(joinRequest, { encoding, projectKey, encryptionKey }) {
     ephemeralPublicKey: ephemeralEncryptKeypair.publicKey,
     encryptedMessage,
   })
-  return StringEncoding[encoding].encode(byteEncodedInvite)
+  return (encoding === 'base32' ? base32 : base62).encode(byteEncodedInvite)
 }
 
 /**
@@ -107,7 +110,9 @@ function decodeInviteSecretMessage(
   { encoding }
 ) {
   // TODO: validate characters used in encoded string?
-  const byteEncodedInvite = StringEncoding[encoding].decode(str)
+  const byteEncodedInvite = (encoding === 'base32' ? base32 : base62).decode(
+    str
+  )
   const { ephemeralPublicKey, encryptedMessage } =
     ByteEncoding.invite.decode(byteEncodedInvite)
   const decryptedMessage = decryptMessage(

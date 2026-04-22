@@ -1,18 +1,18 @@
-// @ts-check
-const { test } = require('tap')
-const crypto = require('crypto')
-const { boxKeypair, signKeypair } = require('../lib/key-utils')
-const {
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import crypto from 'crypto'
+import { signKeypair } from '../lib/key-utils.js'
+import {
   generateInvite,
   decodeInviteSecretMessage,
   encodeJoinRequest,
   decodeJoinRequest,
-} = require('../project-invites')
+} from '../project-invites.js'
 
 /** @type {Array<keyof typeof import('../lib/string-encoding')>} */
 const encodings = ['base32', 'base62']
 
-test('can generate and decode invite', (t) => {
+test('can generate and decode invite', () => {
   for (const encoding of encodings) {
     const projectKey = crypto.randomBytes(32)
     const receiverKeypair = signKeypair()
@@ -27,12 +27,11 @@ test('can generate and decode invite', (t) => {
       receiverKeypair.secretKey,
       { encoding }
     )
-    t.same(secretMessage, { projectKey })
+    assert.deepEqual(secretMessage, { projectKey })
   }
-  t.end()
 })
 
-test('can generate and decode invite with encryption key', (t) => {
+test('can generate and decode invite with encryption key', () => {
   for (const encoding of encodings) {
     const projectKey = crypto.randomBytes(32)
     const encryptionKey = crypto.randomBytes(32)
@@ -49,18 +48,16 @@ test('can generate and decode invite with encryption key', (t) => {
       receiverKeypair.secretKey,
       { encoding }
     )
-    t.same(secretMessage, { projectKey, encryptionKey })
+    assert.deepEqual(secretMessage, { projectKey, encryptionKey })
   }
-  t.end()
 })
 
-test('can encode and decode join request', (t) => {
+test('can encode and decode join request', () => {
   for (const encoding of encodings) {
     const identityPublicKey = crypto.randomBytes(32)
     const joinRequest = { identityPublicKey }
     const encoded = encodeJoinRequest(joinRequest, { encoding })
     const decoded = decodeJoinRequest(encoded, { encoding })
-    t.same(decoded, joinRequest)
+    assert.deepEqual(decoded, joinRequest)
   }
-  t.end()
 })

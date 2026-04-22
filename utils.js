@@ -1,6 +1,5 @@
-// @ts-check
-const sodium = require('sodium-universal')
-const z32 = require('z32')
+import sodium from 'sodium-universal'
+import z32 from 'z32'
 
 const MAPEO = Buffer.from('mapeo')
 const PROJECT_INVITE_ID_SALT = Buffer.from('mapeo project invite id', 'ascii')
@@ -11,7 +10,7 @@ const PROJECT_INVITE_ID_SALT = Buffer.from('mapeo project invite id', 'ascii')
  * @param {Buffer} message
  * @param {Buffer} secretKey
  */
-exports.sign = function (message, secretKey) {
+export function sign(message, secretKey) {
   const signature = Buffer.allocUnsafe(sodium.crypto_sign_BYTES)
   sodium.crypto_sign_detached(signature, message, secretKey)
   return signature
@@ -25,7 +24,7 @@ exports.sign = function (message, secretKey) {
  * @param {Buffer} publicKey public key of keypair used to sign message
  * @returns {boolean}
  */
-exports.verifySignature = function (message, signature, publicKey) {
+export function verifySignature(message, signature, publicKey) {
   return sodium.crypto_sign_verify_detached(signature, message, publicKey)
 }
 
@@ -37,7 +36,7 @@ exports.verifySignature = function (message, signature, publicKey) {
  * @param {Buffer} key
  * @returns {string} z-base-32 encoded hash of the key
  */
-exports.keyToPublicId = function (key) {
+export function keyToPublicId(key) {
   const digest = Buffer.allocUnsafe(32)
   sodium.crypto_generichash(digest, MAPEO, key)
   return z32.encode(digest)
@@ -48,7 +47,7 @@ exports.keyToPublicId = function (key) {
  * @param {Readonly<Buffer>} key
  * @returns {Buffer}
  */
-exports.keyToInviteId = function (key) {
+export function keyToInviteId(key) {
   const digest = Buffer.allocUnsafe(32)
   sodium.crypto_generichash(digest, PROJECT_INVITE_ID_SALT, key)
   return digest

@@ -1,34 +1,32 @@
-// @ts-check
-const { test } = require('tap')
-const { randomBytes } = require('crypto')
-const KeyManager = require('../key-manager')
-const { validateSignKeypair } = require('../lib/key-utils')
-const Hypercore = require('hypercore')
-const RAM = require('random-access-memory')
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { randomBytes } from 'crypto'
+import KeyManager from '../key-manager.js'
+import { validateSignKeypair } from '../lib/key-utils.js'
+import Hypercore from 'hypercore'
+import RAM from 'random-access-memory'
 
-test('encoding backup code', t => {
+test('encoding backup code', () => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
-  t.ok(typeof backupCode === 'string', 'is a string')
-  t.ok(backupCode.length === 30, '30 characters long')
-  t.ok(
+  assert.ok(typeof backupCode === 'string', 'is a string')
+  assert.ok(backupCode.length === 30, '30 characters long')
+  assert.ok(
     backupCode.startsWith(KeyManager.BACKUP_CODE_IDENTIFIER),
     'starts with ' + KeyManager.BACKUP_CODE_IDENTIFIER
   )
-  t.end()
 })
 
-test('decoding backup code', t => {
+test('decoding backup code', () => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const backupCode = km.getIdentityBackupCode()
   const decoded = KeyManager.decodeBackupCode(backupCode)
-  t.same(decoded, rootKey)
-  t.end()
+  assert.ok(decoded.equals(rootKey))
 })
 
-test('invalid backup codes', t => {
+test('invalid backup codes', () => {
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
   const validBackupCode = km.getIdentityBackupCode()
@@ -50,69 +48,63 @@ test('invalid backup codes', t => {
     // transcription error
     validBackupCode.slice(0, 5) +
       (validBackupCode.charAt(5) === 'W' ? 'V' : 'W') +
-      validBackupCode.slice(6)
+      validBackupCode.slice(6),
   ]
 
   for (const code of invalidBackupCodes) {
-    t.throws(() => KeyManager.decodeBackupCode(code), /invalid/i)
+    assert.throws(() => KeyManager.decodeBackupCode(code), /invalid/i)
   }
-  t.end()
 })
 
-test('identity keypair', t => {
+test('identity keypair', () => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
-  t.same(km1.getIdentityKeypair(), km2.getIdentityKeypair())
-  t.ok(validateSignKeypair(km1.getIdentityKeypair()))
-  t.end()
+  assert.deepEqual(km1.getIdentityKeypair(), km2.getIdentityKeypair())
+  assert.ok(validateSignKeypair(km1.getIdentityKeypair()))
 })
 
-test('determenistic derive swarm keypair for today', t => {
+test('determenistic derive swarm keypair for today', () => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
-  t.same(km1.deriveSwarmIdentity(), km2.deriveSwarmIdentity())
-  t.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
-  t.end()
+  assert.deepEqual(km1.deriveSwarmIdentity(), km2.deriveSwarmIdentity())
+  assert.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
 })
 
-test('determenistic derive swarm keypair for specific date', t => {
+test('determenistic derive swarm keypair for specific date', () => {
   const rootKey = KeyManager.generateRootKey()
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
   const date = new Date(0)
-  t.same(km1.deriveSwarmIdentity(date), km2.deriveSwarmIdentity(date))
-  t.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
-  t.end()
+  assert.deepEqual(km1.deriveSwarmIdentity(date), km2.deriveSwarmIdentity(date))
+  assert.ok(validateSignKeypair(km1.deriveSwarmIdentity()))
 })
 
-test('hypercore keypair', t => {
+test('hypercore keypair', () => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
-  t.ok(validateSignKeypair(km1.getHypercoreKeypair('foo', namespace)))
-  t.same(
+  assert.ok(validateSignKeypair(km1.getHypercoreKeypair('foo', namespace)))
+  assert.deepEqual(
     km1.getHypercoreKeypair('foo', namespace),
     km2.getHypercoreKeypair('foo', namespace)
   )
-  t.end()
 })
 
-test('deterministic getDerivedKey', t => {
+test('deterministic getDerivedKey', () => {
   const rootKey = KeyManager.generateRootKey()
   const namespace = Buffer.alloc(32, 5)
   const km1 = new KeyManager(rootKey)
   const km2 = new KeyManager(rootKey)
-  t.same(
+  assert.deepEqual(
     km1.getDerivedKey('foo', namespace),
     km2.getDerivedKey('foo', namespace)
   )
-  t.end()
 })
 
-test('encrypt and decrypt', t => {
+test('encrypt and decrypt', () => {
   const message = Buffer.from('hello world')
   const rootKey = KeyManager.generateRootKey()
   const km = new KeyManager(rootKey)
@@ -120,17 +112,16 @@ test('encrypt and decrypt', t => {
 
   const cypher = km.encryptLocalMessage(message, nonce)
   // Not testing cryptographic security, but at least avoiding silly mistakes
-  t.notSame(
+  assert.notEqual(
     cypher,
     message,
     'encrypted data is not the same as original message'
   )
   const decrypted = km.decryptLocalMessage(cypher, nonce)
-  t.same(decrypted, message, 'message correctly decrypted')
-  t.end()
+  assert.deepEqual(decrypted, message, 'message correctly decrypted')
 })
 
-test('projectKeypair can be used to create a hypercore', async t => {
+test('projectKeypair can be used to create a hypercore', async () => {
   /** @type {Record<string, RAM>} */
   const st = {}
   const keyPair = KeyManager.generateProjectKeypair()
@@ -146,23 +137,22 @@ test('projectKeypair can be used to create a hypercore', async t => {
   await reopen.append('world')
 
   const blocks = await Promise.all([reopen.get(0), reopen.get(1)])
-  t.same(blocks, ['hello', 'world'])
+  assert.deepEqual(blocks, ['hello', 'world'])
 
   await reopen.close()
 
   /** @param {string} name */
-  function open (name) {
+  function open(name) {
     if (st[name]) return st[name]
     st[name] = new RAM()
     return st[name]
   }
 })
 
-test('projectKeypair is non-deterministic (always changes)', t => {
+test('projectKeypair is non-deterministic (always changes)', () => {
   // Not a strong test, but catches an error where we might pass a seed
   // internally so that the same keypair is always generated
   const keypair1 = KeyManager.generateProjectKeypair()
   const keypair2 = KeyManager.generateProjectKeypair()
-  t.notSame(keypair1, keypair2, 'keys are different')
-  t.end()
+  assert.notDeepEqual(keypair1, keypair2, 'keys are different')
 })
