@@ -9,7 +9,7 @@
     "lint": "eslint --cache .",
     "format": "prettier . --write",
     "test": "prettier --check . && npm run lint && npm run type && node --test tests/*.test.js lib/*.test.js",
-    "prepublishOnly": "npm test",
+    "prepublishOnly": "npm test && npm run build",
     "build": "npm run build:types",
     "type": "tsc",
     "build:types": "tsc -p tsconfig.npm.json",
