@@ -13,7 +13,8 @@
     "build": "npm run build:types",
     "type": "tsc",
     "build:types": "tsc -p tsconfig.npm.json",
-    "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'"
+    "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "Digital Democracy",
@@ -37,7 +38,9 @@
     "@types/tape": "^4.13.2",
     "documentation": "^13.2.5",
     "eslint": "^8.57.1",
+    "husky": "^9.1.7",
     "hypercore": "^10.18.5",
+    "lint-staged": "^14.0.1",
     "prettier": "^2.8.8",
     "random-access-memory": "^6.2.0",
     "typescript": "^5.6.2"
@@ -49,6 +52,14 @@
   "prettier": {
     "semi": false,
     "singleQuote": true
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --cache"
+    ],
+    "*": [
+      "prettier --check"
+    ]
   },
   "eslintConfig": {
     "env": {
