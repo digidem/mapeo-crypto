@@ -14,7 +14,7 @@
     "type": "tsc",
     "build:types": "tsc -p tsconfig.npm.json",
     "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "Digital Democracy",
