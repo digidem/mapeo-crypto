@@ -8,7 +8,7 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "lib": ["es2022", "dom"],
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
