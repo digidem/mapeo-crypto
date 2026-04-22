@@ -2,19 +2,23 @@
   "name": "@mapeo/crypto",
   "version": "1.0.1",
   "description": "Key management and encryption / decryption functions for Mapeo",
-  "main": "index.js",
   "type": "module",
-  "types": "dist",
+  "main": "src/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "src/"
+  ],
   "scripts": {
     "lint": "eslint --cache .",
     "format": "prettier . --write",
-    "test": "prettier --check . && npm run lint && npm run type && node --test tests/*.test.js lib/*.test.js",
-    "prepublishOnly": "npm test && npm run build",
-    "build": "npm run build:types",
+    "build": "tsc -p tsconfig.npm.json",
+    "test": "prettier --check . && npm run lint && npm run type && node --test tests/*.test.js",
     "type": "tsc",
-    "build:types": "tsc -p tsconfig.npm.json",
     "docs": "documentation readme index.js --section=API --infer-private '^(#|_)'",
-    "prepare": "husky"
+    "prepublishOnly": "npm test",
+    "prepare": "husky",
+    "prepack": "npm run build"
   },
   "keywords": [],
   "author": "Digital Democracy",

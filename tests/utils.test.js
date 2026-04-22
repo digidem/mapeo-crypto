@@ -7,7 +7,7 @@ import {
   verifySignature,
   keyToPublicId,
   keyToInviteId,
-} from '../index.js'
+} from '../src/index.js'
 import z32 from 'z32'
 
 test('sign & verify', () => {

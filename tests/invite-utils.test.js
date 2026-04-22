@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'crypto'
-import { encryptMessage, decryptMessage } from './invite-utils.js'
-import { boxKeypair, signKeypair } from './key-utils.js'
+import { encryptMessage, decryptMessage } from '../src/lib/invite-utils.js'
+import { boxKeypair, signKeypair } from '../src/lib/key-utils.js'
 
 test('can encrypt and decrypt message', () => {
   const message = crypto.randomBytes(128)

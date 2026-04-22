@@ -8,7 +8,7 @@ import {
   boxKeypair,
   validateSignKeypair,
   validateBoxKeypair,
-} from './key-utils.js'
+} from '../src/lib/key-utils.js'
 
 test('deriveNamedKey', (t) => {
   t.test('can derive', () => {
