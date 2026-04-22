@@ -62,3 +62,4 @@ jobs:
           build-command: |
             npm ci
             npm run docs
+            npm run build
