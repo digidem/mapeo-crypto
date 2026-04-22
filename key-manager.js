@@ -1,4 +1,3 @@
-// @ts-check
 import sodium from 'sodium-universal'
 import assert from 'assert/strict'
 import {
@@ -13,7 +12,7 @@ import calculateCrc16 from 'crc/lib/crc16_ccitt.js'
 const ROOTKEY_BYTES = 16
 const BACKUP_CODE_IDENTIFIER = 'M'
 
-/** @typedef {import('./lib/key-utils').Keypair} Keypair */
+/** @typedef {import('./lib/key-utils.js').Keypair} Keypair */
 
 /**
  * The KeyManager class derives the key pairs used for identifying the device

@@ -1,4 +1,3 @@
-// @ts-check
 import sodium from 'sodium-universal'
 import z32 from 'z32'
 

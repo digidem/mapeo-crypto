@@ -1,12 +1,11 @@
-// @ts-check
 import * as ByteEncoding from './lib/byte-encoding.js'
 import { encryptMessage, decryptMessage } from './lib/invite-utils.js'
 import { boxKeypair } from './lib/key-utils.js'
 import { base32, base62 } from './lib/string-encoding.js'
 
 /** @typedef {'base32' | 'base62'} StringEncoding */
-/** @typedef {import('./lib/byte-encoding').JoinRequest } JoinRequest */
-/** @typedef {import('./lib/byte-encoding').InviteSecretMessage } InviteSecretMessage */
+/** @typedef {import('./lib/byte-encoding.js').JoinRequest } JoinRequest */
+/** @typedef {import('./lib/byte-encoding.js').InviteSecretMessage } InviteSecretMessage */
 
 export {
   encodeJoinRequest,
@@ -67,7 +66,7 @@ function decodeJoinRequest(str, { encoding }) {
  * than `base64`, because symbols like `+` can break URL parsing (e.g. in an SMS
  * message, only part of a URL before a `+` might be clickable).
  *
- * @param {import('./lib/byte-encoding').JoinRequest} joinRequest Decoded join request
+ * @param {import('./lib/byte-encoding.js').JoinRequest} joinRequest Decoded join request
  * @param {Object} options
  * @param {StringEncoding} options.encoding Use base32 if using for an alphanumeric encoded QR Code (uppercase A-Z, 0-9), or base62 for a URL.
  * @param {Buffer} options.projectKey Project key for project you wish to generate the invite for
