@@ -10,6 +10,7 @@ import * as ByteEncoding from './lib/byte-encoding.js'
 import calculateCrc16 from 'crc/lib/crc16_ccitt.js'
 
 const ROOTKEY_BYTES = 16
+const MASTERKEY_BYTES = 32
 const BACKUP_CODE_IDENTIFIER = 'M'
 
 /** @typedef {import('./lib/key-utils.js').Keypair} Keypair */
@@ -30,14 +31,36 @@ class KeyManager {
 
   /**
    * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+   * @param {object} [opts]
+   * @param {Buffer} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid.
    */
-  constructor(rootKey) {
+  constructor(rootKey, { masterKey } = {}) {
     assert(
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`
     )
     this._rootKey = rootKey
-    this._masterKey = deriveMasterKeyFromRootKey(rootKey)
+    if (masterKey) {
+      assert(
+        masterKey.length === MASTERKEY_BYTES,
+        `masterKey must be ${MASTERKEY_BYTES} bytes`
+      )
+      this._masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
+      masterKey.copy(this._masterKey)
+    } else {
+      this._masterKey = deriveMasterKeyFromRootKey(rootKey)
+    }
+  }
+
+  /**
+   * The 32-byte master key from which every other key is derived. Returns a
+   * copy, so the caller can zero it without touching the instance's secure
+   * buffer.
+   *
+   * @returns {Buffer}
+   */
+  get masterKey() {
+    return Buffer.from(this._masterKey)
   }
 
   /**
