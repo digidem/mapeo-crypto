@@ -5,8 +5,10 @@ import assert from 'assert/strict'
  * @typedef {object} BackupCode
  * @property {Buffer} rootKey 16-byte buffer - identity master key for device
  * @property {number} crc16 16-bit crc16 checksum of rootKey
+ * @ignore
  */
 
+/** @ignore */
 export const backupCode = {
   /** @type {(backupCode: BackupCode) => Buffer} */
   encode({ rootKey, crc16 }) {

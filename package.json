@@ -25,26 +25,25 @@
   "license": "MIT",
   "dependencies": {
     "base32.js": "^0.1.0",
-    "compact-encoding": "^2.19.2",
-    "crc": "^3.8.0",
-    "sodium-universal": "^4.0.0",
-    "z32": "^1.0.0"
+    "compact-encoding": "^3.3.1",
+    "crc": "^4.3.2",
+    "sodium-universal": "^5.0.1",
+    "z32": "^1.1.0"
   },
   "devDependencies": {
-    "@digidem/types": "^2.3.0",
+    "@digidem/types": "^2.4.1",
+    "@eslint/js": "^10.0.1",
     "@types/compact-encoding": "^2.15.0",
-    "@types/crc": "^3.4.0",
-    "@types/node": "^18.17.5",
-    "@types/sodium-native": "^2.3.5",
-    "@types/tape": "^4.13.2",
-    "documentation": "^13.2.5",
-    "eslint": "^8.57.1",
+    "@types/node": "^26.2.0",
+    "@types/sodium-native": "^2.3.9",
+    "documentation": "^14.0.3",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
     "husky": "^9.1.7",
-    "hypercore": "^10.18.5",
-    "lint-staged": "^14.0.1",
-    "prettier": "^2.8.8",
-    "random-access-memory": "^6.2.0",
-    "typescript": "^5.6.2"
+    "hypercore": "^11.35.1",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2"
   },
   "directories": {
     "lib": "lib",
@@ -60,54 +59,6 @@
     ],
     "*": [
       "prettier --check"
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "commonjs": true,
-      "es2022": true,
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 13,
-      "sourceType": "module"
-    },
-    "rules": {
-      "curly": [
-        "error",
-        "multi-line"
-      ],
-      "eqeqeq": "error",
-      "default-case": "error",
-      "default-case-last": "error",
-      "prefer-const": "error",
-      "no-unused-vars": [
-        "error",
-        {
-          "varsIgnorePattern": "^_",
-          "argsIgnorePattern": "^_"
-        }
-      ],
-      "no-restricted-imports": [
-        "error",
-        {
-          "paths": [
-            {
-              "name": "assert",
-              "message": "Prefer importing node:assert/strict."
-            },
-            {
-              "name": "node:assert",
-              "message": "Prefer importing node:assert/strict."
-            }
-          ]
-        }
-      ],
-      "no-var": "error"
-    },
-    "ignorePatterns": [
-      "docs/*"
     ]
   },
   "repository": {

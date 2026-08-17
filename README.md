@@ -49,8 +49,8 @@ Sign message using secretKey
 
 #### Parameters
 
-*   `message` **[Buffer](https://nodejs.org/api/buffer.html)** 
-*   `secretKey` **[Buffer](https://nodejs.org/api/buffer.html)** 
+*   `message` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
+*   `secretKey` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 
 ### verifySignature
 
@@ -58,11 +58,11 @@ Verify if the message signature is valid
 
 #### Parameters
 
-*   `message` **[Buffer](https://nodejs.org/api/buffer.html)** 
-*   `signature` **[Buffer](https://nodejs.org/api/buffer.html)** 
+*   `message` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
+*   `signature` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 *   `publicKey` **[Buffer](https://nodejs.org/api/buffer.html)** public key of keypair used to sign message
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)**&#x20;
 
 ### keyToPublicId
 
@@ -72,7 +72,7 @@ of the key and safe to share publicly. The hash is encoded as
 
 #### Parameters
 
-*   `key` **[Buffer](https://nodejs.org/api/buffer.html)** 
+*   `key` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** z-base-32 encoded hash of the key
 
@@ -90,8 +90,8 @@ can impersonate the user to another Mapeo user.
 *   `rootKey` **[Buffer](https://nodejs.org/api/buffer.html)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
 *   `$1` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
 
-    *   `$1.masterKey`  
-*   `opts` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** 
+    *   `$1.masterKey` &#x20;
+*   `opts` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**&#x20;
 
 #### getMasterKey
 
@@ -99,14 +99,14 @@ The 32-byte master key from which every other key is derived. Returns a
 copy, so the caller can zero it without touching the instance's secure
 buffer.
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** 
+Returns **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 
 #### getIdentityKeypair
 
 Generate a deterministic ed25519 signing keypair that uniquely identifies
 this device. Used for identifying the device on the network to other peers.
 
-Returns **[Keypair](#keypair)** 
+Returns **[Keypair](#keypair)**&#x20;
 
 #### deriveSwarmIdentity
 
@@ -119,7 +119,7 @@ Keys persist accross app restarts.
 
 *   `date` **[Date](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)?**  (optional, default `new Date()`)
 
-Returns **[Keypair](#keypair)** 
+Returns **[Keypair](#keypair)**&#x20;
 
 #### getHypercoreKeypair
 
@@ -131,7 +131,7 @@ API compatible with Corestore-next.
 *   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Local name for the keypair
 *   `namespace` **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte namespace
 
-Returns **[Keypair](#keypair)** 
+Returns **[Keypair](#keypair)**&#x20;
 
 #### getDerivedKey
 
@@ -141,7 +141,7 @@ same.
 
 ##### Parameters
 
-*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)**&#x20;
 *   `token` **[Buffer](https://nodejs.org/api/buffer.html)?** Optional 32-byte token to use for key derivation, e.g. to namespace keys.
 
 Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte buffer
@@ -152,7 +152,7 @@ Decrypt an encrypted message using the provided nonce parameter
 
 ##### Parameters
 
-*   `cyphertext` **[Buffer](https://nodejs.org/api/buffer.html)** 
+*   `cyphertext` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 *   `nonce` **[Buffer](https://nodejs.org/api/buffer.html)** 24-byte nonce
 
 #### encryptLocalMessage
@@ -164,7 +164,7 @@ could be subject to replay attacks
 
 ##### Parameters
 
-*   `msg` **[Buffer](https://nodejs.org/api/buffer.html)** 
+*   `msg` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 *   `nonce` **[Buffer](https://nodejs.org/api/buffer.html)** 24-byte nonce
 
 #### generateRootKey
@@ -174,7 +174,7 @@ all keys are deterministically derived from this identity key, so this
 should only be used once on each device and the key should be securely
 stored.
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** 
+Returns **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
 
 #### generateProjectKeypair
 
@@ -191,7 +191,7 @@ check fails.
 
 ##### Parameters
 
-*   `stringEncodedBackupCode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+*   `stringEncodedBackupCode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)**&#x20;
 
 Returns **[Buffer](https://nodejs.org/api/buffer.html)** The 16-byte root key encoded in the backup code
 
@@ -238,4 +238,4 @@ Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte derived key
 
 #### Parameters
 
-*   `keypair` **[Keypair](#keypair)** 
+*   `keypair` **[Keypair](#keypair)**&#x20;

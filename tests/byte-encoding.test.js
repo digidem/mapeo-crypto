@@ -15,7 +15,7 @@ test('trying to decode a backup code of invalid length throws', () => {
     assert.throws(
       () => ByteEncoding.backupCode.decode(crypto.randomBytes(length)),
       /invalid backup code/i,
-      `length ${length}`
+      `length ${length}`,
     )
   }
 })

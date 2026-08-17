@@ -46,7 +46,7 @@ function deriveMasterKeyFromRootKey(rootKey) {
     rootKey,
     PWHASH_OPSLIMIT,
     PWHASH_MEMLIMIT,
-    PWHASH_ALG
+    PWHASH_ALG,
   )
 
   return masterKey
@@ -74,7 +74,7 @@ function deriveNamedKey(masterKey, keyName, token) {
   sodium.crypto_generichash_batch(
     output,
     [APPLICATION_NAMESPACE, token || DEFAULT_TOKEN, Buffer.from(keyName)],
-    masterKey
+    masterKey,
   )
 
   return output
