@@ -12,8 +12,6 @@ export {
   deriveMasterKeyFromRootKey,
   deriveNamedKey,
   signKeypair,
-  boxKeypair,
-  validateBoxKeypair,
   validateSignKeypair,
 }
 
@@ -105,32 +103,9 @@ function signKeypair(seed) {
   }
 }
 
-/**
- * Wrapper for sodium crypto_box_keypair
- * @private
- */
-function boxKeypair() {
-  const publicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
-  const secretKey = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
-
-  sodium.crypto_box_keypair(publicKey, secretKey)
-
-  return {
-    publicKey,
-    secretKey,
-  }
-}
-
 /** @param {Keypair} keypair */
 function validateSignKeypair(keypair) {
   const pk = Buffer.allocUnsafe(sodium.crypto_sign_PUBLICKEYBYTES)
   sodium.crypto_sign_ed25519_sk_to_pk(pk, keypair.secretKey)
-  return pk.equals(keypair.publicKey)
-}
-
-/** @param {Keypair} keypair */
-function validateBoxKeypair(keypair) {
-  const pk = Buffer.allocUnsafe(sodium.crypto_sign_PUBLICKEYBYTES)
-  sodium.crypto_scalarmult_base(pk, keypair.secretKey)
   return pk.equals(keypair.publicKey)
 }
