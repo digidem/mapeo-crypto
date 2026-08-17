@@ -66,8 +66,10 @@ class KeyManager {
 
   /**
    * The 32-byte master key from which every other key is derived. Returns a
-   * copy, so the caller can zero it without touching the instance's secure
-   * buffer.
+   * copy in ordinary (unlocked, swappable) memory — unlike the instance's
+   * internal buffer it is not protected by sodium_malloc, so treat it as a
+   * live secret: hold it only as long as needed and zero it (`.fill(0)`)
+   * when done. Zeroing the copy does not affect the instance.
    *
    * @returns {Buffer}
    */
