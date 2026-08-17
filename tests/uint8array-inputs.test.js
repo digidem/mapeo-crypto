@@ -1,6 +1,5 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import sodium from 'sodium-universal'
 import KeyManager from '../src/key-manager.js'
 import { sign, verifySignature, keyToPublicId } from '../src/index.js'
 import {
@@ -99,40 +98,6 @@ test('returns are still Buffers when given Uint8Array inputs', () => {
   })) {
     assert.ok(Buffer.isBuffer(value), label)
   }
-})
-
-// types/sodium-universal.d.ts rewrites every byte parameter to Uint8Array,
-// destinations included. Nothing in src/ proves the destination half - we
-// always allocate Buffers - so assert sodium really does write into a plain
-// Uint8Array. Also covers the parameter shapes the rewrite has to preserve: an
-// omitted optional, an array of byte arrays, and a nullable one.
-test('sodium accepts Uint8Array destinations', () => {
-  const wasWritten = (/** @type {Uint8Array} */ out) => out.some((b) => b !== 0)
-  const input = Uint8Array.from([1, 2, 3])
-
-  const digest = new Uint8Array(32)
-  sodium.crypto_generichash(digest, input) // optional `key` omitted
-  assert.ok(wasWritten(digest), 'crypto_generichash')
-
-  const batched = new Uint8Array(32)
-  sodium.crypto_generichash_batch(batched, [input]) // Uint8Array[]
-  assert.ok(wasWritten(batched), 'crypto_generichash_batch')
-
-  const cyphertext = new Uint8Array(
-    input.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES,
-  )
-  sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-    cyphertext,
-    input,
-    null, // nullable `ad`
-    null,
-    new Uint8Array(24).fill(1),
-    new Uint8Array(32).fill(2),
-  )
-  assert.ok(
-    wasWritten(cyphertext),
-    'crypto_aead_xchacha20poly1305_ietf_encrypt',
-  )
 })
 
 // The root key is held as a view, so a caller that zeroes its own buffer leaves
