@@ -7,7 +7,7 @@ import {
 } from './lib/key-utils.js'
 import { base32 } from './lib/string-encoding.js'
 import * as ByteEncoding from './lib/byte-encoding.js'
-import calculateCrc16 from 'crc/lib/crc16_ccitt.js'
+import calculateCrc16 from 'crc/crc16ccitt'
 
 const ROOTKEY_BYTES = 16
 const MASTERKEY_BYTES = 32
@@ -38,13 +38,13 @@ class KeyManager {
   constructor(rootKey, { masterKey } = {}) {
     assert(
       rootKey.length === ROOTKEY_BYTES,
-      `rootKey must be ${ROOTKEY_BYTES} bytes`
+      `rootKey must be ${ROOTKEY_BYTES} bytes`,
     )
     this.#rootKey = rootKey
     if (masterKey) {
       assert(
         masterKey.length === MASTERKEY_BYTES,
-        `masterKey must be ${MASTERKEY_BYTES} bytes`
+        `masterKey must be ${MASTERKEY_BYTES} bytes`,
       )
       this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
       masterKey.copy(this.#masterKey)
@@ -131,7 +131,7 @@ class KeyManager {
    */
   decryptLocalMessage(cyphertext, nonce) {
     const msg = Buffer.alloc(
-      cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
+      cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES,
     )
     sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       msg,
@@ -139,7 +139,7 @@ class KeyManager {
       cyphertext,
       null,
       nonce,
-      this.#masterKey
+      this.#masterKey,
     )
     return msg
   }
@@ -155,7 +155,7 @@ class KeyManager {
    */
   encryptLocalMessage(msg, nonce) {
     const cyphertext = Buffer.alloc(
-      msg.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
+      msg.length + sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES,
     )
     sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
       cyphertext,
@@ -163,7 +163,7 @@ class KeyManager {
       null,
       null,
       nonce,
-      this.#masterKey
+      this.#masterKey,
     )
     return cyphertext
   }
@@ -219,17 +219,19 @@ class KeyManager {
   static decodeBackupCode(stringEncodedBackupCode) {
     assert(
       stringEncodedBackupCode.startsWith(BACKUP_CODE_IDENTIFIER),
-      'Invalid backup code: must start with ' + BACKUP_CODE_IDENTIFIER
+      'Invalid backup code: must start with ' + BACKUP_CODE_IDENTIFIER,
     )
     assert(
       stringEncodedBackupCode.length === 30,
-      'Invalid backup code: must be 30 characters'
+      'Invalid backup code: must be 30 characters',
     )
     let byteEncodedBackupCode
     try {
       byteEncodedBackupCode = base32.decode(stringEncodedBackupCode.slice(1))
     } catch (err) {
-      throw new Error('Invalid backup code: invalid base32 encoding')
+      throw new Error('Invalid backup code: invalid base32 encoding', {
+        cause: err,
+      })
     }
     let rootKey
     let crc16
@@ -239,7 +241,9 @@ class KeyManager {
       crc16 = backupCode.crc16
     } catch (err) {
       /* istanbul ignore next - can't find a way to reach here, since assertions will throw before this */
-      throw new Error('Invalid backup code: invalid byte encoding')
+      throw new Error('Invalid backup code: invalid byte encoding', {
+        cause: err,
+      })
     }
     const calculatedCrc16 = calculateCrc16(rootKey)
     if (crc16 !== calculatedCrc16) {

@@ -7,12 +7,14 @@ import {
   validateSignKeypair,
 } from '../src/lib/key-utils.js'
 import Hypercore from 'hypercore'
-import RAM from 'random-access-memory'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 const FIXTURE_ROOT_KEY = Buffer.from('000102030405060708090a0b0c0d0e0f', 'hex')
 const FIXTURE_MASTER_KEY = Buffer.from(
   'bed4350c496024724d50592eb2cd4f61b3333ea871c495f63a4f687aed67f82c',
-  'hex'
+  'hex',
 )
 
 test('encoding backup code', () => {
@@ -23,7 +25,7 @@ test('encoding backup code', () => {
   assert.ok(backupCode.length === 30, '30 characters long')
   assert.ok(
     backupCode.startsWith(KeyManager.BACKUP_CODE_IDENTIFIER),
-    'starts with ' + KeyManager.BACKUP_CODE_IDENTIFIER
+    'starts with ' + KeyManager.BACKUP_CODE_IDENTIFIER,
   )
 })
 
@@ -98,7 +100,7 @@ test('hypercore keypair', () => {
   assert.ok(validateSignKeypair(km1.getHypercoreKeypair('foo', namespace)))
   assert.deepEqual(
     km1.getHypercoreKeypair('foo', namespace),
-    km2.getHypercoreKeypair('foo', namespace)
+    km2.getHypercoreKeypair('foo', namespace),
   )
 })
 
@@ -109,7 +111,7 @@ test('deterministic getDerivedKey', () => {
   const km2 = new KeyManager(rootKey)
   assert.deepEqual(
     km1.getDerivedKey('foo', namespace),
-    km2.getDerivedKey('foo', namespace)
+    km2.getDerivedKey('foo', namespace),
   )
 })
 
@@ -124,24 +126,26 @@ test('encrypt and decrypt', () => {
   assert.notEqual(
     cypher,
     message,
-    'encrypted data is not the same as original message'
+    'encrypted data is not the same as original message',
   )
   const decrypted = km.decryptLocalMessage(cypher, nonce)
   assert.deepEqual(decrypted, message, 'message correctly decrypted')
 })
 
-test('projectKeypair can be used to create a hypercore', async () => {
-  /** @type {Record<string, RAM>} */
-  const st = {}
+test('projectKeypair can be used to create a hypercore', async (t) => {
+  const storage = await mkdtemp(join(tmpdir(), 'mapeo-crypto-'))
+  t.after(() => rm(storage, { recursive: true, force: true }))
+
   const keyPair = KeyManager.generateProjectKeypair()
   // @ts-ignore
-  const core = new Hypercore(open, { keyPair, valueEncoding: 'utf-8' })
+  const core = new Hypercore(storage, { keyPair, valueEncoding: 'utf-8' })
   await core.ready()
   await core.append('hello')
+  await core.close()
 
   // re-open hypercore with keypair and check we can still write to it
   // @ts-ignore
-  const reopen = new Hypercore(open, { keyPair, valueEncoding: 'utf-8' })
+  const reopen = new Hypercore(storage, { keyPair, valueEncoding: 'utf-8' })
   await reopen.ready()
   await reopen.append('world')
 
@@ -149,13 +153,6 @@ test('projectKeypair can be used to create a hypercore', async () => {
   assert.deepEqual(blocks, ['hello', 'world'])
 
   await reopen.close()
-
-  /** @param {string} name */
-  function open(name) {
-    if (st[name]) return st[name]
-    st[name] = new RAM()
-    return st[name]
-  }
 })
 
 test('projectKeypair is non-deterministic (always changes)', () => {
@@ -170,7 +167,7 @@ test('projectKeypair is non-deterministic (always changes)', () => {
 test('pinned master key derivation vector', () => {
   assert.deepEqual(
     Buffer.from(deriveMasterKeyFromRootKey(FIXTURE_ROOT_KEY)),
-    FIXTURE_MASTER_KEY
+    FIXTURE_MASTER_KEY,
   )
 })
 
@@ -185,35 +182,35 @@ test('supplied masterKey is equivalent to deriving it', async (t) => {
   await t.test('identity keypair', () => {
     assert.deepEqual(
       derived.getIdentityKeypair(),
-      supplied.getIdentityKeypair()
+      supplied.getIdentityKeypair(),
     )
   })
 
   await t.test('swarm identity', () => {
     assert.deepEqual(
       derived.deriveSwarmIdentity(date),
-      supplied.deriveSwarmIdentity(date)
+      supplied.deriveSwarmIdentity(date),
     )
   })
 
   await t.test('hypercore keypair', () => {
     assert.deepEqual(
       derived.getHypercoreKeypair('foo', namespace),
-      supplied.getHypercoreKeypair('foo', namespace)
+      supplied.getHypercoreKeypair('foo', namespace),
     )
   })
 
   await t.test('derived key', () => {
     assert.deepEqual(
       derived.getDerivedKey('foo', namespace),
-      supplied.getDerivedKey('foo', namespace)
+      supplied.getDerivedKey('foo', namespace),
     )
   })
 
   await t.test('identity backup code', () => {
     assert.equal(
       derived.getIdentityBackupCode(),
-      supplied.getIdentityBackupCode()
+      supplied.getIdentityBackupCode(),
     )
   })
 
@@ -223,16 +220,16 @@ test('supplied masterKey is equivalent to deriving it', async (t) => {
     assert.deepEqual(
       supplied.decryptLocalMessage(
         derived.encryptLocalMessage(message, nonce),
-        nonce
+        nonce,
       ),
-      message
+      message,
     )
     assert.deepEqual(
       derived.decryptLocalMessage(
         supplied.encryptLocalMessage(message, nonce),
-        nonce
+        nonce,
       ),
-      message
+      message,
     )
   })
 })
@@ -244,12 +241,12 @@ test('masterKey getter returns a fresh copy', () => {
   assert.deepEqual(
     km.getMasterKey(),
     FIXTURE_MASTER_KEY,
-    'instance is unaffected'
+    'instance is unaffected',
   )
   assert.notEqual(
     km.getMasterKey(),
     km.getMasterKey(),
-    'a new buffer each call'
+    'a new buffer each call',
   )
 })
 
@@ -258,10 +255,10 @@ test('constructor rejects invalid key lengths', () => {
   assert.throws(() => new KeyManager(Buffer.alloc(32)), /rootKey must be 16/)
   assert.throws(
     () => new KeyManager(FIXTURE_ROOT_KEY, { masterKey: Buffer.alloc(31) }),
-    /masterKey must be 32/
+    /masterKey must be 32/,
   )
   assert.throws(
     () => new KeyManager(FIXTURE_ROOT_KEY, { masterKey: Buffer.alloc(33) }),
-    /masterKey must be 32/
+    /masterKey must be 32/,
   )
 })

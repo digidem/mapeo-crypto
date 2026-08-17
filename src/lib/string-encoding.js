@@ -1,6 +1,7 @@
 import base32Encoding from 'base32.js'
 import assert from 'assert/strict'
 
+/** @ignore */
 export const base32 = {
   // Using crockford base32 alphabet and charmap for consistency with encoding
   // for IDs in Mapeo (we use crockford because it has better recovery of

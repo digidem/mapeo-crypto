@@ -27,12 +27,12 @@ test('key to public ID', () => {
   assert.equal(
     publicId,
     'zmpu4uwx5eze9jmug6ycgwnirsy4rzfym3c4987gpjsdxzmomi4o',
-    'checks for consistency - a change is a breaking change'
+    'checks for consistency - a change is a breaking change',
   )
   assert.equal(keyToPublicId(key), publicId, 'deterministic')
   assert.notDeepEqual(
     z32.decode(publicId),
     key,
-    "didn't do something dumb and encode without hashing"
+    "didn't do something dumb and encode without hashing",
   )
 })
