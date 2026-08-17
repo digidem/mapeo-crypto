@@ -59,7 +59,7 @@ class KeyManager {
    *
    * @returns {Buffer}
    */
-  get masterKey() {
+  getMasterKey() {
     return Buffer.from(this._masterKey)
   }
 

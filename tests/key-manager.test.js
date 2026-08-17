@@ -239,10 +239,18 @@ test('supplied masterKey is equivalent to deriving it', async (t) => {
 
 test('masterKey getter returns a fresh copy', () => {
   const km = new KeyManager(FIXTURE_ROOT_KEY)
-  assert.deepEqual(km.masterKey, FIXTURE_MASTER_KEY)
-  km.masterKey.fill(0)
-  assert.deepEqual(km.masterKey, FIXTURE_MASTER_KEY, 'instance is unaffected')
-  assert.notEqual(km.masterKey, km.masterKey, 'a new buffer each call')
+  assert.deepEqual(km.getMasterKey(), FIXTURE_MASTER_KEY)
+  km.getMasterKey().fill(0)
+  assert.deepEqual(
+    km.getMasterKey(),
+    FIXTURE_MASTER_KEY,
+    'instance is unaffected'
+  )
+  assert.notEqual(
+    km.getMasterKey(),
+    km.getMasterKey(),
+    'a new buffer each call'
+  )
 })
 
 test('constructor rejects invalid key lengths', () => {
