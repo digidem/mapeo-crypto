@@ -33,7 +33,7 @@ class KeyManager {
   /**
    * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
    * @param {object} [opts]
-   * @param {Buffer} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid.
+   * @param {Uint8Array} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid. A mismatched pair yields a working but *different* identity, whose backup code still encodes `rootKey`.
    */
   constructor(rootKey, { masterKey } = {}) {
     assert(
@@ -47,7 +47,9 @@ class KeyManager {
         `masterKey must be ${MASTERKEY_BYTES} bytes`,
       )
       this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
-      masterKey.copy(this.#masterKey)
+      // `set` rather than `copy`: this key often arrives from a native bridge
+      // as a plain Uint8Array.
+      this.#masterKey.set(masterKey)
     } else {
       this.#masterKey = deriveMasterKeyFromRootKey(rootKey)
     }
@@ -88,6 +90,13 @@ class KeyManager {
     return this._signingKeypair(keyName)
   }
 
+  /**
+   * The backup code for this device's identity: a string-encoded form of the
+   * root key, for the user to write down. Depends only on the root key, so it
+   * is unaffected by a `masterKey` passed to the constructor.
+   *
+   * @returns {string} 30-character backup code
+   */
   getIdentityBackupCode() {
     const crc16 = calculateCrc16(this.#rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
@@ -130,9 +139,13 @@ class KeyManager {
    * @param {Buffer} nonce 24-byte nonce
    */
   decryptLocalMessage(cyphertext, nonce) {
-    const msg = Buffer.alloc(
-      cyphertext.length - sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES,
+    const ABYTES = sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
+    assert(
+      cyphertext.length >= ABYTES,
+      `cyphertext must be at least ${ABYTES} bytes`,
     )
+    const msg = Buffer.alloc(cyphertext.length - ABYTES)
+    // Throws if the tag does not verify - never returns unauthenticated bytes.
     sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       msg,
       null,
@@ -213,21 +226,33 @@ class KeyManager {
    * Decode the root key from a backup code. Throws an error if the CRC
    * check fails.
    *
+   * Input is normalized before validation, because backup codes are
+   * transcribed by hand: case is ignored, and whitespace and hyphens (which
+   * users add to group the code for legibility) are stripped. The base32
+   * alphabet is Crockford's, so `O` reads as `0` and `I`/`L` as `1`.
+   *
    * @param {string} stringEncodedBackupCode
    * @returns {Buffer} The 16-byte root key encoded in the backup code
    */
   static decodeBackupCode(stringEncodedBackupCode) {
     assert(
-      stringEncodedBackupCode.startsWith(BACKUP_CODE_IDENTIFIER),
+      typeof stringEncodedBackupCode === 'string',
+      'Invalid backup code: must be a string',
+    )
+    const normalized = stringEncodedBackupCode
+      .replace(/[\s-]/g, '')
+      .toUpperCase()
+    assert(
+      normalized.startsWith(BACKUP_CODE_IDENTIFIER),
       'Invalid backup code: must start with ' + BACKUP_CODE_IDENTIFIER,
     )
     assert(
-      stringEncodedBackupCode.length === 30,
+      normalized.length === 30,
       'Invalid backup code: must be 30 characters',
     )
     let byteEncodedBackupCode
     try {
-      byteEncodedBackupCode = base32.decode(stringEncodedBackupCode.slice(1))
+      byteEncodedBackupCode = base32.decode(normalized.slice(1))
     } catch (err) {
       throw new Error('Invalid backup code: invalid base32 encoding', {
         cause: err,

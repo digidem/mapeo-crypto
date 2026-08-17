@@ -23,6 +23,7 @@ Key management and encryption / decryption functions for Mapeo.
     *   [getIdentityKeypair](#getidentitykeypair)
     *   [deriveSwarmIdentity](#deriveswarmidentity)
         *   [Parameters](#parameters-4)
+    *   [getIdentityBackupCode](#getidentitybackupcode)
     *   [getHypercoreKeypair](#gethypercorekeypair)
         *   [Parameters](#parameters-5)
     *   [getDerivedKey](#getderivedkey)
@@ -121,6 +122,14 @@ Keys persist accross app restarts.
 
 Returns **[Keypair](#keypair)**&#x20;
 
+#### getIdentityBackupCode
+
+The backup code for this device's identity: a string-encoded form of the
+root key, for the user to write down. Depends only on the root key, so it
+is unaffected by a `masterKey` passed to the constructor.
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 30-character backup code
+
 #### getHypercoreKeypair
 
 Generate a deterministic signing keypair for a given project key and name.
@@ -188,6 +197,11 @@ This keypair is non-deterministic, it must be persisted somewhere.
 
 Decode the root key from a backup code. Throws an error if the CRC
 check fails.
+
+Input is normalized before validation, because backup codes are
+transcribed by hand: case is ignored, and whitespace and hyphens (which
+users add to group the code for legibility) are stripped. The base32
+alphabet is Crockford's, so `O` reads as `0` and `I`/`L` as `1`.
 
 ##### Parameters
 
