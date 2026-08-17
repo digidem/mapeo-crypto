@@ -92,6 +92,9 @@ used to backup this identity and recover it on a new device. The root key
 and backup code must be kept secret at all times - someone who has this key
 can impersonate the user to another CoMapeo user.
 
+Key material passed to the constructor is copied into the instance's own
+locked memory, so the caller is free to zero its buffers afterwards.
+
 #### Parameters
 
 *   `rootKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo

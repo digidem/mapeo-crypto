@@ -9,10 +9,10 @@ import Hypercore from 'hypercore'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { DEVICE_A, DEVICE_B, keyManagerFor } from './fixtures.js'
+import { DEVICE_A, DEVICE_B, keyManagerFor, u8 } from './fixtures.js'
 
-const NAMESPACE_1 = Buffer.alloc(32, 1)
-const NAMESPACE_2 = Buffer.alloc(32, 2)
+const NAMESPACE_1 = new Uint8Array(32).fill(1)
+const NAMESPACE_2 = new Uint8Array(32).fill(2)
 
 test('constructor rejects invalid key lengths', () => {
   assert.throws(() => new KeyManager(Buffer.alloc(15)), /rootKey must be 16/)
@@ -83,7 +83,7 @@ test('supplied masterKey is equivalent to deriving it', async (t) => {
 
   await t.test('local message encryption interoperates', () => {
     const message = Buffer.from('hello world')
-    const nonce = Buffer.alloc(24, 7)
+    const nonce = new Uint8Array(24).fill(7)
     assert.deepEqual(
       supplied.decryptLocalMessage(
         derived.encryptLocalMessage(message, nonce),
@@ -101,13 +101,28 @@ test('supplied masterKey is equivalent to deriving it', async (t) => {
   })
 })
 
-test('supplied masterKey accepts a plain Uint8Array', () => {
-  // The cache this option exists for reaches us across a native bridge, which
-  // does not necessarily hand back a Buffer.
-  const km = new KeyManager(DEVICE_A.rootKey, {
-    masterKey: new Uint8Array(DEVICE_A.masterKey),
-  })
-  assert.deepEqual(km.getMasterKey(), DEVICE_A.masterKey)
+// Both secrets are copied into the instance's own sodium_malloc'd memory, so a
+// caller is free to zero its own buffers afterwards. The instance needs both
+// for its whole lifetime - the root key to produce the backup code - so
+// neither can follow the caller's buffer without breaking.
+test('constructor copies both secrets rather than referencing them', () => {
+  const callerRootKey = u8(DEVICE_A.rootKey)
+  const callerMasterKey = u8(DEVICE_A.masterKey)
+  const km = new KeyManager(callerRootKey, { masterKey: callerMasterKey })
+
+  callerRootKey.fill(0)
+  callerMasterKey.fill(0)
+
+  assert.deepEqual(
+    km.getIdentityKeypair(),
+    keyManagerFor(DEVICE_A).getIdentityKeypair(),
+    'keys still derive from the master key it was given',
+  )
+  assert.equal(
+    km.getIdentityBackupCode(),
+    DEVICE_A.backupCode,
+    'backup code still encodes the root key it was given',
+  )
 })
 
 test('a masterKey that does not match its rootKey is trusted, not verified', () => {
@@ -327,12 +342,12 @@ test('decodeBackupCode rejects a non-string', () => {
 
 test('encrypt and decrypt', () => {
   const km = keyManagerFor(DEVICE_A)
-  const nonce = Buffer.alloc(24, 7)
+  const nonce = new Uint8Array(24).fill(7)
 
   for (const message of [Buffer.from('hello world'), Buffer.alloc(0)]) {
-    const cypher = km.encryptLocalMessage(message, nonce)
+    const cypher = km.encryptLocalMessage(u8(message), nonce)
     assert.notDeepEqual(cypher, message, 'cyphertext differs from plaintext')
-    assert.deepEqual(km.decryptLocalMessage(cypher, nonce), message)
+    assert.deepEqual(km.decryptLocalMessage(u8(cypher), nonce), message)
   }
 })
 
@@ -340,8 +355,8 @@ test('encrypt and decrypt', () => {
 // failed authentication has to throw rather than yield unauthenticated bytes.
 test('decryption fails loudly', () => {
   const km = keyManagerFor(DEVICE_A)
-  const nonce = Buffer.alloc(24, 7)
-  const cypher = km.encryptLocalMessage(Buffer.from('hello world'), nonce)
+  const nonce = new Uint8Array(24).fill(7)
+  const cypher = km.encryptLocalMessage(u8(Buffer.from('hello world')), nonce)
 
   const tampered = Buffer.from(cypher)
   tampered[0] ^= 1
@@ -351,7 +366,7 @@ test('decryption fails loudly', () => {
     'tampered cyphertext',
   )
   assert.throws(
-    () => km.decryptLocalMessage(cypher, Buffer.alloc(24, 8)),
+    () => km.decryptLocalMessage(cypher, new Uint8Array(24).fill(8)),
     /could not verify data/,
     'wrong nonce',
   )

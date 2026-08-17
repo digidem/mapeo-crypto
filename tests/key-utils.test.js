@@ -7,21 +7,21 @@ import {
   signKeypair,
   validateSignKeypair,
 } from '../src/lib/key-utils.js'
-import { DEVICE_A, DEVICE_B } from './fixtures.js'
+import { DEVICE_A, DEVICE_B, u8 } from './fixtures.js'
 
 // Locks the Argon2id output forever: any drift here is fleet-wide identity
 // loss. Two vectors, so this covers determinism and distinctness too - which is
 // why no separate test derives the same key twice just to compare.
 test('pinned master key derivation vectors', () => {
   for (const { rootKey, masterKey } of [DEVICE_A, DEVICE_B]) {
-    assert.deepEqual(Buffer.from(deriveMasterKey(rootKey)), masterKey)
+    assert.deepEqual(Buffer.from(deriveMasterKey(u8(rootKey))), masterKey)
   }
 })
 
 test('deriveMasterKeyFromRootKey rejects keys that are not 16 bytes', () => {
   for (const length of [0, 15, 17, 32]) {
     assert.throws(
-      () => deriveMasterKey(Buffer.alloc(length)),
+      () => deriveMasterKey(new Uint8Array(length)),
       /rootKey must be 16 bytes/,
       `length ${length}`,
     )
@@ -29,9 +29,9 @@ test('deriveMasterKeyFromRootKey rejects keys that are not 16 bytes', () => {
 })
 
 test('deriveNamedKey', () => {
-  const mk = Buffer.alloc(32)
-  const TOKEN1 = Buffer.alloc(32, 1)
-  const TOKEN2 = Buffer.alloc(32, 2)
+  const mk = new Uint8Array(32)
+  const TOKEN1 = new Uint8Array(32).fill(1)
+  const TOKEN2 = new Uint8Array(32).fill(2)
 
   assert.deepEqual(derive(mk, 'a'), derive(mk, 'a'))
   assert.deepEqual(derive(mk, 'a', TOKEN1), derive(mk, 'a', TOKEN1))
@@ -41,15 +41,15 @@ test('deriveNamedKey', () => {
 })
 
 test('deriveNamedKey rejects low-entropy inputs', () => {
-  assert.throws(() => derive(Buffer.alloc(31), 'a'), /masterKey must be/)
+  assert.throws(() => derive(new Uint8Array(31), 'a'), /masterKey must be/)
   assert.throws(
-    () => derive(Buffer.alloc(32), 'a', Buffer.alloc(31)),
+    () => derive(new Uint8Array(32), 'a', new Uint8Array(31)),
     /token must be/,
   )
 })
 
 test('signKeypair(seed) generates deterministic keys', () => {
-  const seed = crypto.randomBytes(32)
+  const seed = u8(crypto.randomBytes(32))
   assert.deepEqual(signKeypair(seed), signKeypair(seed))
 })
 
@@ -59,9 +59,9 @@ test('signKeypair() does not generate deterministic keys', () => {
 
 test('signKeypair() generates valid keys', () => {
   assert.ok(validateSignKeypair(signKeypair()))
-  assert.ok(validateSignKeypair(signKeypair(crypto.randomBytes(32))))
+  assert.ok(validateSignKeypair(signKeypair(u8(crypto.randomBytes(32)))))
 })
 
 test('signKeypair rejects a short seed', () => {
-  assert.throws(() => signKeypair(Buffer.alloc(31)), /seed must be/)
+  assert.throws(() => signKeypair(new Uint8Array(31)), /seed must be/)
 })

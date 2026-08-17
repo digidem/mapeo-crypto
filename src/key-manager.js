@@ -25,6 +25,9 @@ const BACKUP_CODE_IDENTIFIER = 'M'
  * used to backup this identity and recover it on a new device. The root key
  * and backup code must be kept secret at all times - someone who has this key
  * can impersonate the user to another CoMapeo user.
+ *
+ * Key material passed to the constructor is copied into the instance's own
+ * locked memory, so the caller is free to zero its buffers afterwards.
  */
 class KeyManager {
   #masterKey
@@ -40,21 +43,21 @@ class KeyManager {
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`,
     )
-    // A view over the caller's bytes, never a copy - zeroing their root key
-    // has to zero ours. `crc` also rejects a bare Uint8Array in its types.
-    this.#rootKey = Buffer.from(
-      rootKey.buffer,
-      rootKey.byteOffset,
-      rootKey.byteLength,
-    )
+    // Both secrets are copied into sodium_malloc'd memory, which is mlock'd
+    // (so it cannot be swapped to disk) and guarded. `set` rather than `copy`
+    // because these often arrive from a native bridge as plain Uint8Arrays.
+    //
+    // Copied, not referenced: the instance needs both for its whole lifetime -
+    // the root key to produce the backup code - so a caller zeroing its own
+    // buffer must not reach in here and silently corrupt them.
+    this.#rootKey = sodium.sodium_malloc(ROOTKEY_BYTES)
+    this.#rootKey.set(rootKey)
     if (masterKey) {
       assert(
         masterKey.length === MASTERKEY_BYTES,
         `masterKey must be ${MASTERKEY_BYTES} bytes`,
       )
       this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
-      // `set` rather than `copy`: this key often arrives from a native bridge
-      // as a plain Uint8Array.
       this.#masterKey.set(masterKey)
     } else {
       this.#masterKey = deriveMasterKeyFromRootKey(rootKey)
