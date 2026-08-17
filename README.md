@@ -9,6 +9,10 @@ Key management and encryption / decryption functions for Mapeo.
 
 <!-- This API documentation is maintained by hand. Please keep it in sync when changing the source. -->
 
+Anything that takes key material accepts any `Uint8Array`, so a key read
+straight off a native bridge needs no conversion. Everything returned is a
+Node `Buffer`.
+
 #### Table of Contents
 
 *   [sign](#sign)
@@ -50,8 +54,10 @@ Sign message using secretKey
 
 #### Parameters
 
-*   `message` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
-*   `secretKey` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
+*   `message` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+*   `secretKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+
+Returns **[Buffer](https://nodejs.org/api/buffer.html)** 64-byte detached signature
 
 ### verifySignature
 
@@ -59,9 +65,9 @@ Verify if the message signature is valid
 
 #### Parameters
 
-*   `message` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
-*   `signature` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
-*   `publicKey` **[Buffer](https://nodejs.org/api/buffer.html)** public key of keypair used to sign message
+*   `message` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+*   `signature` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+*   `publicKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** public key of keypair used to sign message
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)**&#x20;
 
@@ -73,7 +79,7 @@ of the key and safe to share publicly. The hash is encoded as
 
 #### Parameters
 
-*   `key` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
+*   `key` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** z-base-32 encoded hash of the key
 
@@ -86,12 +92,15 @@ used to backup this identity and recover it on a new device. The root key
 and backup code must be kept secret at all times - someone who has this key
 can impersonate the user to another CoMapeo user.
 
+Key material passed to the constructor is copied into the instance's own
+locked memory, so the caller is free to zero its buffers afterwards.
+
 #### Parameters
 
-*   `rootKey` **[Buffer](https://nodejs.org/api/buffer.html)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
+*   `rootKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
 *   `opts` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**&#x20;
 
-    *   `opts.masterKey` **[Buffer](https://nodejs.org/api/buffer.html)?** Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid.
+    *   `opts.masterKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)?** Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid. A mismatched pair yields a working but *different* identity, whose backup code still encodes `rootKey`.
 
 #### getMasterKey
 
@@ -137,7 +146,7 @@ API compatible with Corestore-next.
 ##### Parameters
 
 *   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Local name for the keypair
-*   `namespace` **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte namespace
+*   `namespace` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 32-byte namespace
 
 Returns **[Keypair](#keypair)**&#x20;
 
@@ -150,7 +159,7 @@ same.
 ##### Parameters
 
 *   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)**&#x20;
-*   `token` **[Buffer](https://nodejs.org/api/buffer.html)?** Optional 32-byte token to use for key derivation, e.g. to namespace keys.
+*   `token` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)?** Optional 32-byte token to use for key derivation, e.g. to namespace keys.
 
 Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte buffer
 
@@ -160,8 +169,8 @@ Decrypt an encrypted message using the provided nonce parameter
 
 ##### Parameters
 
-*   `cyphertext` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
-*   `nonce` **[Buffer](https://nodejs.org/api/buffer.html)** 24-byte nonce
+*   `cyphertext` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+*   `nonce` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 24-byte nonce
 
 #### encryptLocalMessage
 
@@ -172,8 +181,8 @@ could be subject to replay attacks
 
 ##### Parameters
 
-*   `msg` **[Buffer](https://nodejs.org/api/buffer.html)**&#x20;
-*   `nonce` **[Buffer](https://nodejs.org/api/buffer.html)** 24-byte nonce
+*   `msg` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)**&#x20;
+*   `nonce` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 24-byte nonce
 
 #### generateRootKey
 
@@ -225,7 +234,7 @@ master key.
 
 #### Parameters
 
-*   `rootKey` **[Buffer](https://nodejs.org/api/buffer.html)** 16-bytes root key
+*   `rootKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 16-bytes root key
 
 Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte master key
 
@@ -241,9 +250,9 @@ implementation in corestore-next
 
 #### Parameters
 
-*   `masterKey` **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte high-entropy master key
+*   `masterKey` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 32-byte high-entropy master key
 *   `keyName` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of the key to derive
-*   `token` **[Buffer](https://nodejs.org/api/buffer.html)?** Optional token (32-byte buffer) to use for key derivation, e.g. for namespacing keys
+*   `token` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)?** Optional token (32 bytes) to use for key derivation, e.g. for namespacing keys
 
 Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32-byte derived key
 

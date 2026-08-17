@@ -3,16 +3,16 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { sign, verifySignature, keyToPublicId } from '../src/index.js'
 import z32 from 'z32'
-import { DEVICE_A, DEVICE_B, keyManagerFor } from './fixtures.js'
+import { DEVICE_A, DEVICE_B, keyManagerFor, u8 } from './fixtures.js'
 
 test('sign & verify', () => {
   const keyPair = keyManagerFor(DEVICE_A).getIdentityKeypair()
   const message = Buffer.from('hello world')
 
-  const sig = sign(message, keyPair.secretKey)
+  const sig = sign(u8(message), u8(keyPair.secretKey))
 
   assert.equal(sig.length, 64)
-  assert.ok(verifySignature(message, sig, keyPair.publicKey))
+  assert.ok(verifySignature(u8(message), u8(sig), u8(keyPair.publicKey)))
 })
 
 // CoreOwnership records carry signatures straight off the wire, and treat a
@@ -22,32 +22,36 @@ test('verifySignature rejects everything it should', () => {
   const keyPair = keyManagerFor(DEVICE_A).getIdentityKeypair()
   const otherKeyPair = keyManagerFor(DEVICE_B).getIdentityKeypair()
   const message = Buffer.from('hello world')
-  const sig = sign(message, keyPair.secretKey)
+  const sig = sign(u8(message), u8(keyPair.secretKey))
 
   const tampered = Buffer.from(sig)
   tampered[0] ^= 1
 
   assert.ok(
-    !verifySignature(message, Buffer.alloc(64), keyPair.publicKey),
+    !verifySignature(u8(message), new Uint8Array(64), u8(keyPair.publicKey)),
     'an all-zero signature',
   )
   assert.ok(
-    !verifySignature(message, tampered, keyPair.publicKey),
+    !verifySignature(u8(message), u8(tampered), u8(keyPair.publicKey)),
     'a tampered signature',
   )
   assert.ok(
-    !verifySignature(Buffer.from('hello worlt'), sig, keyPair.publicKey),
+    !verifySignature(
+      u8(Buffer.from('hello worlt')),
+      u8(sig),
+      u8(keyPair.publicKey),
+    ),
     'a different message',
   )
   assert.ok(
-    !verifySignature(message, sig, otherKeyPair.publicKey),
+    !verifySignature(u8(message), u8(sig), u8(otherKeyPair.publicKey)),
     'a different public key',
   )
 })
 
 test('key to public ID', () => {
   const key = createHash('sha256').update('test key').digest()
-  const publicId = keyToPublicId(key)
+  const publicId = keyToPublicId(u8(key))
   assert.equal(
     publicId,
     'zmpu4uwx5eze9jmug6ycgwnirsy4rzfym3c4987gpjsdxzmomi4o',

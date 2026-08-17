@@ -32,9 +32,24 @@ export const DEVICE_B = {
  * ~120ms per KeyManager and dominates the runtime of the whole suite. Tests
  * that are about the derivation itself construct their own instance.
  *
+ * Key material goes in as plain Uint8Arrays, so every test built on this
+ * exercises the widest type the API accepts. Buffer is a Uint8Array, so
+ * passing one is covered by construction and needs no separate test.
+ *
  * @param {Device} device
  * @returns {KeyManager}
  */
 export function keyManagerFor({ rootKey, masterKey }) {
-  return new KeyManager(rootKey, { masterKey })
+  return new KeyManager(u8(rootKey), { masterKey: u8(masterKey) })
+}
+
+/**
+ * A plain Uint8Array over a copy of the same bytes - what a caller reading key
+ * material off a native bridge or out of structured storage tends to hold.
+ *
+ * @param {Uint8Array} bytes
+ * @returns {Uint8Array}
+ */
+export function u8(bytes) {
+  return Uint8Array.from(bytes)
 }

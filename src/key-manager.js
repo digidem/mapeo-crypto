@@ -25,13 +25,16 @@ const BACKUP_CODE_IDENTIFIER = 'M'
  * used to backup this identity and recover it on a new device. The root key
  * and backup code must be kept secret at all times - someone who has this key
  * can impersonate the user to another CoMapeo user.
+ *
+ * Key material passed to the constructor is copied into the instance's own
+ * locked memory, so the caller is free to zero its buffers afterwards.
  */
 class KeyManager {
   #masterKey
   #rootKey
 
   /**
-   * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
+   * @param {Uint8Array} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
    * @param {object} [opts]
    * @param {Uint8Array} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid. A mismatched pair yields a working but *different* identity, whose backup code still encodes `rootKey`.
    */
@@ -40,15 +43,21 @@ class KeyManager {
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`,
     )
-    this.#rootKey = rootKey
+    // Both secrets are copied into sodium_malloc'd memory, which is mlock'd
+    // (so it cannot be swapped to disk) and guarded. `set` rather than `copy`
+    // because these often arrive from a native bridge as plain Uint8Arrays.
+    //
+    // Copied, not referenced: the instance needs both for its whole lifetime -
+    // the root key to produce the backup code - so a caller zeroing its own
+    // buffer must not reach in here and silently corrupt them.
+    this.#rootKey = sodium.sodium_malloc(ROOTKEY_BYTES)
+    this.#rootKey.set(rootKey)
     if (masterKey) {
       assert(
         masterKey.length === MASTERKEY_BYTES,
         `masterKey must be ${MASTERKEY_BYTES} bytes`,
       )
       this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
-      // `set` rather than `copy`: this key often arrives from a native bridge
-      // as a plain Uint8Array.
       this.#masterKey.set(masterKey)
     } else {
       this.#masterKey = deriveMasterKeyFromRootKey(rootKey)
@@ -111,7 +120,7 @@ class KeyManager {
    * API compatible with Corestore-next.
    *
    * @param {string} name Local name for the keypair
-   * @param {Buffer} namespace 32-byte namespace
+   * @param {Uint8Array} namespace 32-byte namespace
    * @returns {Keypair}
    */
   getHypercoreKeypair(name, namespace) {
@@ -125,7 +134,7 @@ class KeyManager {
    * same.
    *
    * @param {string} name
-   * @param {Buffer} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
+   * @param {Uint8Array} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
    * @returns {Buffer} 32-byte buffer
    */
   getDerivedKey(name, token) {
@@ -135,8 +144,8 @@ class KeyManager {
   /**
    * Decrypt an encrypted message using the provided nonce parameter
    *
-   * @param {Buffer} cyphertext
-   * @param {Buffer} nonce 24-byte nonce
+   * @param {Uint8Array} cyphertext
+   * @param {Uint8Array} nonce 24-byte nonce
    */
   decryptLocalMessage(cyphertext, nonce) {
     const ABYTES = sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES
@@ -163,8 +172,8 @@ class KeyManager {
    * messages over the internet, because the nonce is non-random, so messages
    * could be subject to replay attacks
    *
-   * @param {Buffer} msg
-   * @param {Buffer} nonce 24-byte nonce
+   * @param {Uint8Array} msg
+   * @param {Uint8Array} nonce 24-byte nonce
    */
   encryptLocalMessage(msg, nonce) {
     const cyphertext = Buffer.alloc(
@@ -188,7 +197,7 @@ class KeyManager {
    * @private
    *
    * @param {string} name
-   * @param {Buffer} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
+   * @param {Uint8Array} [token] Optional 32-byte token to use for key derivation, e.g. to namespace keys.
    * @returns {Keypair}
    */
   _signingKeypair(name, token) {
