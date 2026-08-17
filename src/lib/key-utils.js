@@ -31,7 +31,7 @@ const DEFAULT_TOKEN = Buffer.alloc(32, 0)
  * 16-bytes of entropy of the root key map to the 32-bytes of entropy of the
  * master key.
  *
- * @param {Buffer} rootKey 16-bytes root key
+ * @param {Uint8Array} rootKey 16-bytes root key
  * @returns {Buffer} 32-byte master key
  */
 function deriveMasterKeyFromRootKey(rootKey) {
@@ -61,9 +61,9 @@ function deriveMasterKeyFromRootKey(rootKey) {
  * Adapted from https://github.com/hyperdivision/derive-key/tree/v1.0.1 and the
  * implementation in corestore-next
  *
- * @param {Buffer} masterKey 32-byte high-entropy master key
+ * @param {Uint8Array} masterKey 32-byte high-entropy master key
  * @param {string} keyName Name of the key to derive
- * @param {Buffer} [token] Optional token (32-byte buffer) to use for key derivation, e.g. for namespacing keys
+ * @param {Uint8Array} [token] Optional token (32 bytes) to use for key derivation, e.g. for namespacing keys
  * @returns {Buffer} 32-byte derived key
  */
 function deriveNamedKey(masterKey, keyName, token) {
@@ -84,7 +84,8 @@ function deriveNamedKey(masterKey, keyName, token) {
  * Wrapper for sodium crypto_sign_keypair & crypto_sign_seed_keypair
  * @private
  *
- * @param {Buffer} [seed] Optional seed to deterministically generate the keypair
+ * @param {Uint8Array} [seed] Optional seed to deterministically generate the keypair
+ * @returns {Keypair}
  */
 function signKeypair(seed) {
   assert(!seed || seed.length >= 32, 'seed must be at least 32 bytes')

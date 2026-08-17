@@ -6,8 +6,9 @@ const MAPEO = Buffer.from('mapeo')
 /**
  * Sign message using secretKey
  *
- * @param {Buffer} message
- * @param {Buffer} secretKey
+ * @param {Uint8Array} message
+ * @param {Uint8Array} secretKey
+ * @returns {Buffer} 64-byte detached signature
  */
 export function sign(message, secretKey) {
   const signature = Buffer.allocUnsafe(sodium.crypto_sign_BYTES)
@@ -18,9 +19,9 @@ export function sign(message, secretKey) {
 /**
  * Verify if the message signature is valid
  *
- * @param {Buffer} message
- * @param {Buffer} signature
- * @param {Buffer} publicKey public key of keypair used to sign message
+ * @param {Uint8Array} message
+ * @param {Uint8Array} signature
+ * @param {Uint8Array} publicKey public key of keypair used to sign message
  * @returns {boolean}
  */
 export function verifySignature(message, signature, publicKey) {
@@ -32,7 +33,7 @@ export function verifySignature(message, signature, publicKey) {
  * of the key and safe to share publicly. The hash is encoded as
  * [z-base-32](http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt)
  *
- * @param {Buffer} key
+ * @param {Uint8Array} key
  * @returns {string} z-base-32 encoded hash of the key
  */
 export function keyToPublicId(key) {
