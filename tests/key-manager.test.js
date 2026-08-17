@@ -2,9 +2,18 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { randomBytes } from 'crypto'
 import KeyManager from '../src/key-manager.js'
-import { validateSignKeypair } from '../src/lib/key-utils.js'
+import {
+  deriveMasterKeyFromRootKey,
+  validateSignKeypair,
+} from '../src/lib/key-utils.js'
 import Hypercore from 'hypercore'
 import RAM from 'random-access-memory'
+
+const FIXTURE_ROOT_KEY = Buffer.from('000102030405060708090a0b0c0d0e0f', 'hex')
+const FIXTURE_MASTER_KEY = Buffer.from(
+  'bed4350c496024724d50592eb2cd4f61b3333ea871c495f63a4f687aed67f82c',
+  'hex'
+)
 
 test('encoding backup code', () => {
   const rootKey = KeyManager.generateRootKey()
@@ -155,4 +164,104 @@ test('projectKeypair is non-deterministic (always changes)', () => {
   const keypair1 = KeyManager.generateProjectKeypair()
   const keypair2 = KeyManager.generateProjectKeypair()
   assert.notDeepEqual(keypair1, keypair2, 'keys are different')
+})
+
+// Locks the Argon2id output forever: any drift here is fleet-wide identity loss.
+test('pinned master key derivation vector', () => {
+  assert.deepEqual(
+    Buffer.from(deriveMasterKeyFromRootKey(FIXTURE_ROOT_KEY)),
+    FIXTURE_MASTER_KEY
+  )
+})
+
+test('supplied masterKey is equivalent to deriving it', async (t) => {
+  const derived = new KeyManager(FIXTURE_ROOT_KEY)
+  const supplied = new KeyManager(FIXTURE_ROOT_KEY, {
+    masterKey: deriveMasterKeyFromRootKey(FIXTURE_ROOT_KEY),
+  })
+  const namespace = Buffer.alloc(32, 5)
+  const date = new Date(0)
+
+  await t.test('identity keypair', () => {
+    assert.deepEqual(
+      derived.getIdentityKeypair(),
+      supplied.getIdentityKeypair()
+    )
+  })
+
+  await t.test('swarm identity', () => {
+    assert.deepEqual(
+      derived.deriveSwarmIdentity(date),
+      supplied.deriveSwarmIdentity(date)
+    )
+  })
+
+  await t.test('hypercore keypair', () => {
+    assert.deepEqual(
+      derived.getHypercoreKeypair('foo', namespace),
+      supplied.getHypercoreKeypair('foo', namespace)
+    )
+  })
+
+  await t.test('derived key', () => {
+    assert.deepEqual(
+      derived.getDerivedKey('foo', namespace),
+      supplied.getDerivedKey('foo', namespace)
+    )
+  })
+
+  await t.test('identity backup code', () => {
+    assert.equal(
+      derived.getIdentityBackupCode(),
+      supplied.getIdentityBackupCode()
+    )
+  })
+
+  await t.test('local message encryption interoperates', () => {
+    const message = Buffer.from('hello world')
+    const nonce = randomBytes(24)
+    assert.deepEqual(
+      supplied.decryptLocalMessage(
+        derived.encryptLocalMessage(message, nonce),
+        nonce
+      ),
+      message
+    )
+    assert.deepEqual(
+      derived.decryptLocalMessage(
+        supplied.encryptLocalMessage(message, nonce),
+        nonce
+      ),
+      message
+    )
+  })
+})
+
+test('masterKey getter returns a fresh copy', () => {
+  const km = new KeyManager(FIXTURE_ROOT_KEY)
+  assert.deepEqual(km.getMasterKey(), FIXTURE_MASTER_KEY)
+  km.getMasterKey().fill(0)
+  assert.deepEqual(
+    km.getMasterKey(),
+    FIXTURE_MASTER_KEY,
+    'instance is unaffected'
+  )
+  assert.notEqual(
+    km.getMasterKey(),
+    km.getMasterKey(),
+    'a new buffer each call'
+  )
+})
+
+test('constructor rejects invalid key lengths', () => {
+  assert.throws(() => new KeyManager(Buffer.alloc(15)), /rootKey must be 16/)
+  assert.throws(() => new KeyManager(Buffer.alloc(32)), /rootKey must be 16/)
+  assert.throws(
+    () => new KeyManager(FIXTURE_ROOT_KEY, { masterKey: Buffer.alloc(31) }),
+    /masterKey must be 32/
+  )
+  assert.throws(
+    () => new KeyManager(FIXTURE_ROOT_KEY, { masterKey: Buffer.alloc(33) }),
+    /masterKey must be 32/
+  )
 })

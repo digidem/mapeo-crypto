@@ -10,6 +10,7 @@ import * as ByteEncoding from './lib/byte-encoding.js'
 import calculateCrc16 from 'crc/lib/crc16_ccitt.js'
 
 const ROOTKEY_BYTES = 16
+const MASTERKEY_BYTES = 32
 const BACKUP_CODE_IDENTIFIER = 'M'
 
 /** @typedef {import('./lib/key-utils.js').Keypair} Keypair */
@@ -23,21 +24,41 @@ const BACKUP_CODE_IDENTIFIER = 'M'
  * can impersonate the user to another Mapeo user.
  */
 class KeyManager {
-  /** @private */
-  _masterKey
-  /** @private */
-  _rootKey
+  #masterKey
+  #rootKey
 
   /**
    * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+   * @param {object} [opts]
+   * @param {Buffer} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid.
    */
-  constructor(rootKey) {
+  constructor(rootKey, { masterKey } = {}) {
     assert(
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`
     )
-    this._rootKey = rootKey
-    this._masterKey = deriveMasterKeyFromRootKey(rootKey)
+    this.#rootKey = rootKey
+    if (masterKey) {
+      assert(
+        masterKey.length === MASTERKEY_BYTES,
+        `masterKey must be ${MASTERKEY_BYTES} bytes`
+      )
+      this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
+      masterKey.copy(this.#masterKey)
+    } else {
+      this.#masterKey = deriveMasterKeyFromRootKey(rootKey)
+    }
+  }
+
+  /**
+   * The 32-byte master key from which every other key is derived. Returns a
+   * copy, so the caller can zero it without touching the instance's secure
+   * buffer.
+   *
+   * @returns {Buffer}
+   */
+  getMasterKey() {
+    return Buffer.from(this.#masterKey)
   }
 
   /**
@@ -65,9 +86,9 @@ class KeyManager {
   }
 
   getIdentityBackupCode() {
-    const crc16 = calculateCrc16(this._rootKey)
+    const crc16 = calculateCrc16(this.#rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
-      rootKey: this._rootKey,
+      rootKey: this.#rootKey,
       crc16,
     })
     return BACKUP_CODE_IDENTIFIER + base32.encode(encodedBackupCode)
@@ -96,7 +117,7 @@ class KeyManager {
    * @returns {Buffer} 32-byte buffer
    */
   getDerivedKey(name, token) {
-    return deriveNamedKey(this._masterKey, name, token)
+    return deriveNamedKey(this.#masterKey, name, token)
   }
 
   /**
@@ -115,7 +136,7 @@ class KeyManager {
       cyphertext,
       null,
       nonce,
-      this._masterKey
+      this.#masterKey
     )
     return msg
   }
@@ -139,7 +160,7 @@ class KeyManager {
       null,
       null,
       nonce,
-      this._masterKey
+      this.#masterKey
     )
     return cyphertext
   }
