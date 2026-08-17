@@ -3,63 +3,28 @@ declare module 'sodium-universal' {
 
   // sodium-universal resolves to sodium-native on Node and sodium-javascript
   // elsewhere, but only the former ships types, so we borrow them. They narrow
-  // every parameter to Buffer, which libsodium does not require: any Uint8Array
-  // works. Widen the inputs we pass caller-supplied data to, so the Buffer in
-  // those signatures does not leak out into this package's public types.
+  // every byte parameter to Buffer, which libsodium does not require: any
+  // Uint8Array works, for destinations as well as inputs.
   //
-  // Output parameters stay Buffer - we always allocate those ourselves.
-  interface WidenedInputs {
-    crypto_pwhash(
-      output: Buffer,
-      password: Uint8Array,
-      salt: Uint8Array,
-      opslimit: number,
-      memlimit: number,
-      algorithm: number,
-    ): void
-    crypto_generichash(
-      output: Buffer,
-      input: Uint8Array,
-      key?: Uint8Array,
-    ): void
-    crypto_generichash_batch(
-      output: Buffer,
-      inputArray: Uint8Array[],
-      key?: Uint8Array,
-    ): void
-    crypto_sign_detached(
-      signature: Buffer,
-      message: Uint8Array,
-      secretKey: Uint8Array,
-    ): void
-    crypto_sign_verify_detached(
-      signature: Uint8Array,
-      message: Uint8Array,
-      publicKey: Uint8Array,
-    ): boolean
-    crypto_sign_seed_keypair(
-      publicKey: Buffer,
-      secretKey: Buffer,
-      seed: Uint8Array,
-    ): void
-    crypto_aead_xchacha20poly1305_ietf_encrypt(
-      ciphertext: Buffer,
-      message: Uint8Array,
-      ad: Uint8Array | null,
-      nullValue: null,
-      npub: Uint8Array,
-      key: Uint8Array,
-    ): void
-    crypto_aead_xchacha20poly1305_ietf_decrypt(
-      message: Buffer,
-      nullValue: null,
-      ciphertext: Uint8Array,
-      ad: Uint8Array | null,
-      npub: Uint8Array,
-      key: Uint8Array,
-    ): void
+  // Rewritten wholesale rather than per-method, so this keeps describing
+  // sodium-native rather than whichever subset of it we happen to call.
+
+  type WidenBytes<T> = T extends Buffer
+    ? Uint8Array
+    : T extends Buffer[]
+      ? Uint8Array[]
+      : T
+
+  type WidenParams<A extends readonly unknown[]> = {
+    [K in keyof A]: WidenBytes<A[K]>
   }
 
-  const widened: Omit<typeof sodium, keyof WidenedInputs> & WidenedInputs
+  // Return types are left alone: those are values sodium-native hands back,
+  // and on Node they really are Buffers.
+  type WidenFn<F> = F extends (...args: infer A) => infer R
+    ? (...args: WidenParams<A>) => R
+    : F
+
+  const widened: { [K in keyof typeof sodium]: WidenFn<(typeof sodium)[K]> }
   export = widened
 }
