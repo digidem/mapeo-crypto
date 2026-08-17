@@ -1,7 +1,7 @@
 {
-  "name": "@mapeo/crypto",
+  "name": "@comapeo/crypto",
   "version": "1.1.0",
-  "description": "Key management and encryption / decryption functions for Mapeo",
+  "description": "Key management and encryption / decryption functions for CoMapeo",
   "type": "module",
   "main": "src/index.js",
   "types": "dist/index.d.ts",
@@ -63,10 +63,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/digidem/mapeo-crypto.git"
+    "url": "git+https://github.com/digidem/comapeo-crypto.git"
   },
   "bugs": {
-    "url": "https://github.com/digidem/mapeo-crypto/issues"
+    "url": "https://github.com/digidem/comapeo-crypto/issues"
   },
-  "homepage": "https://github.com/digidem/mapeo-crypto#readme"
+  "homepage": "https://github.com/digidem/comapeo-crypto#readme"
 }

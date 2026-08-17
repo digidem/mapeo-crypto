@@ -1,7 +1,7 @@
-## @mapeo/crypto
+## @comapeo/crypto
 
-[![Node.js CI](https://github.com/digidem/mapeo-crypto/workflows/Node.js%20CI/badge.svg)](https://github.com/digidem/mapeo-crypto/actions/workflows/node.js.yml)
-[![Npm package version](https://img.shields.io/npm/v/@mapeo/crypto)](https://npmjs.com/package/@mapeo/crypto)
+[![Node.js CI](https://github.com/digidem/comapeo-crypto/workflows/Node.js%20CI/badge.svg)](https://github.com/digidem/comapeo-crypto/actions/workflows/node.js.yml)
+[![Npm package version](https://img.shields.io/npm/v/@comapeo/crypto)](https://npmjs.com/package/@comapeo/crypto)
 
 Key management and encryption / decryption functions for Mapeo.
 
@@ -83,11 +83,11 @@ and for all the hypercores on the device. All the key pairs are generated
 deterministically from a single 16-byte root key. The backup code can be
 used to backup this identity and recover it on a new device. The root key
 and backup code must be kept secret at all times - someone who has this key
-can impersonate the user to another Mapeo user.
+can impersonate the user to another CoMapeo user.
 
 #### Parameters
 
-*   `rootKey` **[Buffer](https://nodejs.org/api/buffer.html)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+*   `rootKey` **[Buffer](https://nodejs.org/api/buffer.html)** 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
 *   `$1` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
 
     *   `$1.masterKey` &#x20;

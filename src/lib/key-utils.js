@@ -1,7 +1,7 @@
 // We are vendoring most of these cryptography functions, because any change to
-// the algorythms would break the key derivation, and hence break Mapeo. We keep
-// a lot more control over changes by vendoring these.
-// See https://macwright.com/2021/03/11/vendor-by-default.html
+// the algorithms would break the key derivation, and hence break CoMapeo. We
+// keep a lot more control over changes by vendoring these. See
+// https://macwright.com/2021/03/11/vendor-by-default.html
 
 import sodium from 'sodium-universal'
 import assert from 'assert/strict'

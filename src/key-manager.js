@@ -24,14 +24,14 @@ const BACKUP_CODE_IDENTIFIER = 'M'
  * deterministically from a single 16-byte root key. The backup code can be
  * used to backup this identity and recover it on a new device. The root key
  * and backup code must be kept secret at all times - someone who has this key
- * can impersonate the user to another Mapeo user.
+ * can impersonate the user to another CoMapeo user.
  */
 class KeyManager {
   #masterKey
   #rootKey
 
   /**
-   * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
+   * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for CoMapeo
    * @param {object} [opts]
    * @param {Buffer} [opts.masterKey] Previously derived 32-byte master key for this same `rootKey`, e.g. read from a cache. When provided the expensive derivation is skipped and this value is used directly. The caller is responsible for it actually being `deriveMasterKeyFromRootKey(rootKey)`: the pairing is trusted, not verified, because verifying it would mean running the derivation this option exists to avoid.
    */
