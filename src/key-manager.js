@@ -24,10 +24,8 @@ const BACKUP_CODE_IDENTIFIER = 'M'
  * can impersonate the user to another Mapeo user.
  */
 class KeyManager {
-  /** @private */
-  _masterKey
-  /** @private */
-  _rootKey
+  #masterKey
+  #rootKey
 
   /**
    * @param {Buffer} rootKey 16-bytes of random data that uniquely identify the device, used to derive a 32-byte master key, which is used to derive all the keypairs used for Mapeo
@@ -39,16 +37,16 @@ class KeyManager {
       rootKey.length === ROOTKEY_BYTES,
       `rootKey must be ${ROOTKEY_BYTES} bytes`
     )
-    this._rootKey = rootKey
+    this.#rootKey = rootKey
     if (masterKey) {
       assert(
         masterKey.length === MASTERKEY_BYTES,
         `masterKey must be ${MASTERKEY_BYTES} bytes`
       )
-      this._masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
-      masterKey.copy(this._masterKey)
+      this.#masterKey = sodium.sodium_malloc(MASTERKEY_BYTES)
+      masterKey.copy(this.#masterKey)
     } else {
-      this._masterKey = deriveMasterKeyFromRootKey(rootKey)
+      this.#masterKey = deriveMasterKeyFromRootKey(rootKey)
     }
   }
 
@@ -60,7 +58,7 @@ class KeyManager {
    * @returns {Buffer}
    */
   getMasterKey() {
-    return Buffer.from(this._masterKey)
+    return Buffer.from(this.#masterKey)
   }
 
   /**
@@ -88,9 +86,9 @@ class KeyManager {
   }
 
   getIdentityBackupCode() {
-    const crc16 = calculateCrc16(this._rootKey)
+    const crc16 = calculateCrc16(this.#rootKey)
     const encodedBackupCode = ByteEncoding.backupCode.encode({
-      rootKey: this._rootKey,
+      rootKey: this.#rootKey,
       crc16,
     })
     return BACKUP_CODE_IDENTIFIER + base32.encode(encodedBackupCode)
@@ -119,7 +117,7 @@ class KeyManager {
    * @returns {Buffer} 32-byte buffer
    */
   getDerivedKey(name, token) {
-    return deriveNamedKey(this._masterKey, name, token)
+    return deriveNamedKey(this.#masterKey, name, token)
   }
 
   /**
@@ -138,7 +136,7 @@ class KeyManager {
       cyphertext,
       null,
       nonce,
-      this._masterKey
+      this.#masterKey
     )
     return msg
   }
@@ -162,7 +160,7 @@ class KeyManager {
       null,
       null,
       nonce,
-      this._masterKey
+      this.#masterKey
     )
     return cyphertext
   }
