@@ -100,21 +100,40 @@ test('returns are still Buffers when given Uint8Array inputs', () => {
   }
 })
 
-// The root key is held as a view, so a caller that zeroes its own buffer leaves
-// no plaintext copy behind. The master key is deliberately the other way round:
-// it is copied into sodium_malloc'd memory.
-test('the root key is referenced, the master key is copied', () => {
-  const callerRootKey = Uint8Array.from(rootKey)
+// A supplied master key is copied into sodium_malloc'd memory, so the instance
+// keeps working whatever the caller does with its own buffer afterwards.
+test('a supplied masterKey is copied, not referenced', () => {
   const callerMasterKey = Uint8Array.from(masterKey)
-  const km = new KeyManager(callerRootKey, { masterKey: callerMasterKey })
+  const km = new KeyManager(rootKey, { masterKey: callerMasterKey })
 
   callerMasterKey.fill(0)
-  assert.deepEqual(km.getMasterKey(), masterKey, 'master key was copied')
+
+  assert.deepEqual(
+    km.getIdentityKeypair(),
+    keyManagerFor(DEVICE_A).getIdentityKeypair(),
+    'keys still derive from the master key it was given',
+  )
+  assert.deepEqual(km.getMasterKey(), masterKey)
+})
+
+// The root key is the other way round, deliberately: it is held as a view, so a
+// caller that zeroes its own buffer leaves no plaintext root key behind in the
+// KeyManager. getIdentityBackupCode is the only window onto it.
+test('the rootKey is referenced, not copied', () => {
+  const callerRootKey = Uint8Array.from(rootKey)
+  const km = new KeyManager(callerRootKey, { masterKey })
+  // Backup codes depend only on the root key, so this master key is arbitrary.
+  const allZeroesBackupCode = new KeyManager(new Uint8Array(16), {
+    masterKey,
+  }).getIdentityBackupCode()
+
+  assert.equal(km.getIdentityBackupCode(), backupCode, 'before zeroing')
 
   callerRootKey.fill(0)
-  assert.notEqual(
+
+  assert.equal(
     km.getIdentityBackupCode(),
-    backupCode,
-    'root key was not copied',
+    allZeroesBackupCode,
+    'the instance reads the caller-zeroed bytes',
   )
 })
