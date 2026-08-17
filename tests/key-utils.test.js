@@ -5,9 +5,7 @@ import {
   deriveNamedKey as derive,
   deriveMasterKeyFromRootKey as deriveMasterKey,
   signKeypair,
-  boxKeypair,
   validateSignKeypair,
-  validateBoxKeypair,
 } from '../src/lib/key-utils.js'
 
 test('deriveNamedKey', (t) => {
@@ -46,8 +44,4 @@ test('signKeypair() does not generate deterministic keys', () => {
 test('signKeypair() generates valid keys', () => {
   assert.ok(validateSignKeypair(signKeypair()))
   assert.ok(validateSignKeypair(signKeypair(crypto.randomBytes(32))))
-})
-
-test('boxKeypair() generates valid keys', () => {
-  assert.ok(validateBoxKeypair(boxKeypair()))
 })

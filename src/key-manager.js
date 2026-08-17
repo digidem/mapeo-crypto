@@ -13,7 +13,10 @@ const ROOTKEY_BYTES = 16
 const MASTERKEY_BYTES = 32
 const BACKUP_CODE_IDENTIFIER = 'M'
 
-/** @typedef {import('./lib/key-utils.js').Keypair} Keypair */
+/**
+ * @import {Keypair} from './lib/key-utils.js'
+ * @ignore
+ */
 
 /**
  * The KeyManager class derives the key pairs used for identifying the device
