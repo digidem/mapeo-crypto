@@ -4,7 +4,7 @@ import assert from 'assert/strict'
 /** @ignore */
 export const base32 = {
   // Using crockford base32 alphabet and charmap for consistency with encoding
-  // for IDs in Mapeo (we use crockford because it has better recovery of
+  // for IDs in CoMapeo (we use crockford because it has better recovery of
   // mis-typed characters)
   /** @type {(buf: Buffer) => string} */
   encode(buf) {

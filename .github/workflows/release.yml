@@ -93,4 +93,4 @@ jobs:
         run: |
           gh api repos/${{ matrix.downstream.owner }}/${{ matrix.downstream.repo }}/dispatches \
             -f event_type=first-party-release \
-            -f 'client_payload[package]=@mapeo/crypto'
+            -f 'client_payload[package]=@comapeo/crypto'

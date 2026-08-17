@@ -133,7 +133,7 @@ test('encrypt and decrypt', () => {
 })
 
 test('projectKeypair can be used to create a hypercore', async (t) => {
-  const storage = await mkdtemp(join(tmpdir(), 'mapeo-crypto-'))
+  const storage = await mkdtemp(join(tmpdir(), 'comapeo-crypto-'))
   t.after(() => rm(storage, { recursive: true, force: true }))
 
   const keyPair = KeyManager.generateProjectKeypair()
